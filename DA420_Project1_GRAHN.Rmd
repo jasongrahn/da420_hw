@@ -1,0 +1,47 @@
+---
+title: "DA420_project1"
+author: "Jason Grahn"
+date: "1/9/2019"
+output: word_document
+---
+
+```{r import}
+library(readxl)
+
+project1_sheet <- read_excel("project1_sheet.xlsx")
+(project1_sheet)
+```
+
+
+```{r model}
+library(tidyverse)
+p1lm <- lm(y ~ x, data = (project1_sheet %>% filter(set_name == "s1")))
+p1lm
+           
+p2lm <- lm(y ~ x, data = (project1_sheet %>% filter(set_name == "s2")))
+p2lm
+
+p3lm <- lm(y ~ x, data = (project1_sheet %>% filter(set_name == "s3")))
+p3lm
+
+p4lm <- lm(y ~ x, data = (project1_sheet %>% filter(set_name == "s4")))
+p4lm
+```
+
+```{r summaries}
+summary(project1_sheet %>% filter(set_name == "s1"))
+summary(project1_sheet %>% filter(set_name == "s2"))
+summary(project1_sheet %>% filter(set_name == "s3"))
+summary(project1_sheet %>% filter(set_name == "s4"))
+```
+
+```{r plots}
+library(ggplot2)
+project1_sheet %>% 
+  ggplot(aes(x=x, y=y, colour=set_name))+
+  geom_point()+
+  geom_smooth(method = lm, se = FALSE)+
+  theme(legend.position = "none")+
+  facet_wrap(~set_name, ncol=2) +
+  theme_light() 
+```
