@@ -1,0 +1,80 @@
+---
+title: "DA420_PROJECT1_GRAHN_V2"
+author: "Jason Grahn"
+date: "1/11/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	message = FALSE,
+	warning = FALSE,
+	include = FALSE
+)
+library(datasauRus)
+library(tidyverse)
+
+datasets <- datasaurus_dozen
+
+datasets <- datasets %>% 
+  filter(dataset %in% c("v_lines", "h_lines", "x_shape", "high_lines")) %>% 
+  mutate(dataset = case_when(dataset == "v_lines" ~ "p1",
+                             dataset == "h_lines" ~ "p2",
+                             dataset == "x_shape" ~ "p3",
+                             dataset == "high_lines" ~ "p4"))
+```
+
+```{r}
+#showing the data
+head(datasets, 10)
+tail(datasets, 10)
+```
+
+```{r}
+#showing summary stats for mean and standard deviation are nearly identical
+summary_stats <- datasets %>%
+  group_by(dataset) %>% 
+  summarise(mean_x = round(mean(x), 2),
+            mean_y = round(mean(y), 2),
+            sd_x = round(sd(x), 2),
+            sd_y = round(sd(y), 2)) 
+
+summary_stats
+```
+
+```{r}
+#showing linear models are the same
+lm_v <- datasets %>% 
+  filter(dataset %in% c("p1")) %>% 
+  group_by(dataset) %>% 
+  lm(x ~ y, .)
+lm_v
+
+lm_h <- datasets %>% 
+  filter(dataset %in% c("p2")) %>% 
+  group_by(dataset) %>% 
+  lm(x ~ y, .)
+lm_h
+
+lm_x <- datasets %>% 
+  filter(dataset %in% c("p3")) %>% 
+  group_by(dataset) %>% 
+  lm(x ~ y, .)
+lm_x
+
+lm_hl <- datasets %>% 
+  filter(dataset %in% c("p4")) %>% 
+  group_by(dataset) %>% 
+  lm(x ~ y, .)
+```
+
+```{r}
+#showing the plotting
+datasets %>% 
+  group_by(dataset) %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point(aes(color = dataset)) +
+  facet_wrap(~dataset, nrow = 2) +
+  theme_light() +
+  theme(legend.position="none")
+```

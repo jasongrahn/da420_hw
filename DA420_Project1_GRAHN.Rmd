@@ -29,10 +29,13 @@ p4lm
 ```
 
 ```{r summaries}
-summary(project1_sheet %>% filter(set_name == "s1"))
-summary(project1_sheet %>% filter(set_name == "s2"))
-summary(project1_sheet %>% filter(set_name == "s3"))
-summary(project1_sheet %>% filter(set_name == "s4"))
+project1_sheet %>% 
+  group_by(set_name) %>% 
+  summarise(mean_x = mean(x),
+            mean_y = mean(y),
+            sd_x = sd(x),
+            sd_y = sd(y))
+
 ```
 
 ```{r plots}
