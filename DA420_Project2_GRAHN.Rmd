@@ -14,10 +14,10 @@ library(readr)
 Download Dodger.csv
 ```{r}
 dodgers <- read_csv("dodgers.csv", 
-                    col_types = cols(day_of_week = col_factor(levels = c("Monday", "Tuesday", 
-                                                                         "Wednesday", "Thursday", 
-                                                                         "Friday", "Saturday", 
-                                                                         "Sunday")),
+                    col_types = cols(#day_of_week = col_factor(levels = c("Monday", "Tuesday", 
+                                      #                                   "Wednesday", "Thursday", 
+                                       #                                  "Friday", "Saturday", 
+                                        #                                 "Sunday")),
                                      month = col_factor(levels = c("JAN", "FEB", "MAR", "APR",
                                                                    "MAY", "JUN", "JUL", "AUG",
                                                                    "SEP", "OCT", "NOV", "DEC"))))
@@ -27,27 +27,38 @@ glimpse(dodgers)
 
 use R to develop two side-by-side boxplots, as seen in Figure 2.1 and Figure 2.2
 ```{r}
+#need to transform full name days "monday" to abbreviated "mon"
+dodgers <- dodgers %>% mutate(day_of_week = case_when(day_of_week == "Monday" ~ "Mon",
+                                 day_of_week == "Tuesday" ~ "Tue",
+                                 day_of_week == "Wednesday" ~ "Wed",
+                                 day_of_week == "Thursday" ~ "Thur",
+                                 day_of_week == "Friday" ~ "Fri",
+                                 day_of_week == "Saturday" ~ "Sat",
+                                 day_of_week == "Sunday" ~ "Sun"),
+                              #and need to assign them factor levels
+                              day_of_week = factor(day_of_week, levels = c("Mon", "Tue", "Wed",
+                                                                           "Thur", "Fri", "Sat", "Sun")))
+
 #boxplots with ggplot using the dodger data
 #day of week on X
 #attendence in K's on Y
-
-dodgers %>% 
+dow_box <- dodgers %>% 
   ggplot(aes(x = day_of_week, y = (attend/1000))) +
-  geom_boxplot(aes(fill = "pink")) +
+  geom_boxplot(fill = "pink") +
   theme_light() +
   theme(legend.position="none") +
-  labs(y = "Attendence in 1000's",
+  labs(y = "Attendence (1000)",
        x = "Day of the Week")
-
 #month on X
 #attendence in K's on Y
-dodgers %>% 
+mon_box <- dodgers %>% 
   ggplot(aes(x = month, y = (attend/1000))) +
-  geom_boxplot(aes(fill = "blue")) +
+  geom_boxplot(fill = "dodgerblue1") +
   theme_light() +
   theme(legend.position="none") +
-  labs(y = "Attendence in 1000's",
-       x = "Day of the Week")
+  labs(y = "", x = "Month of Year")
+
+cowplot::plot_grid(dow_box, mon_box)
 ```
 
 and two scatter plots, as seen in Figure 2.3 and Figure 2.4
