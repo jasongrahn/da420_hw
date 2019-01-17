@@ -1,0 +1,57 @@
+---
+title: "da420_PROJECT2_GRAHN"
+author: "Jason Grahn"
+date: "1/17/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+```
+
+Download Dodger.csv
+```{r}
+dodgers <- read_csv("dodgers.csv", 
+                    col_types = cols(day_of_week = col_factor(levels = c("Monday", "Tuesday", 
+                                                                         "Wednesday", "Thursday", 
+                                                                         "Friday", "Saturday", 
+                                                                         "Sunday")),
+                                     month = col_factor(levels = c("JAN", "FEB", "MAR", "APR",
+                                                                   "MAY", "JUN", "JUL", "AUG",
+                                                                   "SEP", "OCT", "NOV", "DEC"))))
+#View(dodgers)
+glimpse(dodgers)
+```
+
+use R to develop two side-by-side boxplots, as seen in Figure 2.1 and Figure 2.2
+```{r}
+#boxplots with ggplot using the dodger data
+#day of week on X
+#attendence in K's on Y
+
+dodgers %>% 
+  ggplot(aes(x = day_of_week, y = (attend/1000))) +
+  geom_boxplot(aes(fill = "pink")) +
+  theme_light() +
+  theme(legend.position="none") +
+  labs(y = "Attendence in 1000's",
+       x = "Day of the Week")
+
+#month on X
+#attendence in K's on Y
+dodgers %>% 
+  ggplot(aes(x = month, y = (attend/1000))) +
+  geom_boxplot(aes(fill = "blue")) +
+  theme_light() +
+  theme(legend.position="none") +
+  labs(y = "Attendence in 1000's",
+       x = "Day of the Week")
+```
+
+and two scatter plots, as seen in Figure 2.3 and Figure 2.4
+```{r}
+
+```
+
