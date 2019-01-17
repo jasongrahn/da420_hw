@@ -27,8 +27,9 @@ glimpse(dodgers)
 
 use R to develop two side-by-side boxplots, as seen in Figure 2.1 and Figure 2.2
 ```{r}
-#need to transform full name days "monday" to abbreviated "mon"
-dodgers <- dodgers %>% mutate(day_of_week = case_when(day_of_week == "Monday" ~ "Mon",
+#need to transform full name days to abbreviated; ie "monday" to "mon"
+dodgers <- dodgers %>% mutate("Attend/1000" = attend/1000,
+                              day_of_week_f = case_when(day_of_week == "Monday" ~ "Mon",
                                  day_of_week == "Tuesday" ~ "Tue",
                                  day_of_week == "Wednesday" ~ "Wed",
                                  day_of_week == "Thursday" ~ "Thur",
@@ -36,12 +37,13 @@ dodgers <- dodgers %>% mutate(day_of_week = case_when(day_of_week == "Monday" ~ 
                                  day_of_week == "Saturday" ~ "Sat",
                                  day_of_week == "Sunday" ~ "Sun"),
                               #and need to assign them factor levels
-                              day_of_week = factor(day_of_week, levels = c("Mon", "Tue", "Wed",
-                                                                           "Thur", "Fri", "Sat", "Sun")))
+                              day_of_week_f = factor(day_of_week, levels = c("Mon", "Tue", "Wed",
+                                                                           "Thur", "Fri", "Sat", "Sun")),
+                              day_night_f = factor(day_night, levels = c("Day", "Night")))
 
-#boxplots with ggplot using the dodger data
-#day of week on X
-#attendence in K's on Y
+# boxplots with ggplot using the dodger data
+## day of week on X
+## attendence in K's on Y
 dow_box <- dodgers %>% 
   ggplot(aes(x = day_of_week, y = (attend/1000))) +
   geom_boxplot(fill = "pink") +
@@ -49,8 +51,8 @@ dow_box <- dodgers %>%
   theme(legend.position="none") +
   labs(y = "Attendence (1000)",
        x = "Day of the Week")
-#month on X
-#attendence in K's on Y
+## month on X
+## attendence in K's on Y
 mon_box <- dodgers %>% 
   ggplot(aes(x = month, y = (attend/1000))) +
   geom_boxplot(fill = "dodgerblue1") +
@@ -61,8 +63,36 @@ mon_box <- dodgers %>%
 cowplot::plot_grid(dow_box, mon_box)
 ```
 
-and two scatter plots, as seen in Figure 2.3 and Figure 2.4
+and two scatter plots, as seen in Figure 2.3 
 ```{r}
+#we're analyzing days with fireworks against day / night, clear / cloudy, AND temperature
+#fireworks by shape and color
+#attendence (K's) on Y
+#temp on X
+
+dodgers %>% 
+  ggplot(aes(x = , 
+             y = ,
+             shape = fireworks,
+             fill = fireworks)) +
+  geom_point() 
 
 ```
 
+
+and Figure 2.4
+```{r}
+# scatterplot teams against attendence 
+# y axis is opposing teams
+# x axis is attendence (K's)
+# fill by day/night
+dodgers %>% 
+  ggplot(aes(x = (attend/1000), y = opponent)) + 
+  geom_point(aes(color = day_night)) +
+  theme_light() +
+  theme(legend.position="top") +
+  labs(y = "",
+       x = "Attendence (thousands)")
+```
+
+Use R to develop a Regression Model Performance, as seen in Figure 2.5. Examine regression diagnostics for the fitted model. Hint: Look at the Exhibit 2.1 in page 25-27.
