@@ -9,38 +9,61 @@ The instructor has us blindly running the code from https://blog.revolutionanaly
 
 So, I'm running it. But this is a better resource: http://www.rdatamining.com/examples/association-rules
 
+going to try running it on mtcars, 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
 
+##Have to load `MTcars` and make get the factor columns
 ```{r}
-load("~/da420_hw/project2/titanic.raw.rdata")
+#load out mtcars and make factors
+mt.mute <- mtcars %>% 
+  mutate(high_mpg = if_else(mpg >= 25, TRUE, FALSE)) %>% 
+  arrange(desc(high_mpg)) %>% 
+  select(cyl,vs:high_mpg) %>% 
+  mutate(cyl = as.factor(cyl),
+         vs = as.factor(vs),
+         am = as.factor(am),
+         gear = as.factor(gear),
+         carb = as.factor(carb),
+         high_mpg = as.factor(high_mpg))
 
-idx <- sample(1:nrow(titanic.raw), 5)
+#and let's just pare down the dataset so we dont get SO MANY rules? 
+mt.mute <- head(mt.mute,15)
+idx <- sample(1:nrow(mt.mute), 5)
 
-titanic.raw[idx, ]
-summary(titanic.raw)
+mt.mute[idx, ]
+summary(mt.mute)
 ```
+
+##Here's where we load `arules` to find those association rules
 
 ```{r}
  library(arules)
  # find association rules with default settings
-rules <- apriori(titanic.raw)
+rules <- apriori(mt.mute)
 inspect(rules)
 ```
 
+##and now we want to make some rules for high_mpg = TRUE
 ```{r}
-# rules with rhs containing "Survived" only
-rules <- apriori(titanic.raw,
+# rules with rhs containing "high_mpg" only
+rules <- apriori(mt.mute,
                  parameter = list(minlen=2, supp=0.005, conf=0.8),
-                 appearance = list(rhs=c("Survived=No", "Survived=Yes"),
+                 appearance = list(rhs=c("high_mpg=TRUE", 
+                                         "high_mpg=FALSE"),
                                    default="lhs"),
                  control = list(verbose=F))
 rules.sorted <- sort(rules, by="lift")
 inspect(rules.sorted)
+
+#gives us 149 rules. egads. 
 ```
 
-find redundant rules
+So we find redundant rules if it's possible! 
+
 ```{r}
 # find redundant rules
 subset.matrix <- is.subset(rules.sorted, rules.sorted)
@@ -48,11 +71,12 @@ subset.matrix[lower.tri(subset.matrix, diag=T)] <- NA
 redundant <- colSums(subset.matrix, na.rm=T) >= 1
 ```
  
-which rules are redundant?
+Ok, so which rules are redundant?
 ```{r}
-which(redundant)
+#putting a head on this because it's rather long
+head(which(redundant),10)
 
-# remove redundant rules
+#Now let's remove redundant rules
 rules.pruned <- rules.sorted[!redundant]
 inspect(rules.pruned)
 ```
