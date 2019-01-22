@@ -7,9 +7,9 @@ The instructor has us blindly running the code from <https://blog.revolutionanal
 
 So, I'm running it. But this is a better resource: <http://www.rdatamining.com/examples/association-rules>
 
-going to try running it on mtcars,
+I'll run this on mtcars.
 
-Have to load `MTcars` and make get the factor columns
+Have to load `MTcars` and make the columns into factors
 -----------------------------------------------------
 
 ``` r
@@ -109,7 +109,7 @@ rules <- apriori(mt.mute)
 #head(inspect(rules),15)
 ```
 
-and now we want to make some rules for high\_mpg = TRUE
+And now we want to make some rules for high\_mpg = TRUE
 -------------------------------------------------------
 
 ``` r
@@ -123,7 +123,7 @@ rules <- apriori(mt.mute,
 rules.sorted <- sort(rules, by="lift")
 ```
 
-So we find redundant rules if it's possible!
+#So we find redundant rules if it's possible!
 
 ``` r
 # find redundant rules
@@ -138,7 +138,7 @@ subset.matrix[lower.tri(subset.matrix, diag=T)] <- NA
 redundant <- colSums(subset.matrix, na.rm=T) >= 1
 ```
 
-Ok, so which rules are redundant?
+#Ok, so which rules are redundant?
 
 ``` r
 #putting a head on this because it's rather long
@@ -164,7 +164,7 @@ rules.pruned <- rules.sorted[!redundant]
 inspect(rules.pruned)
 ```
 
-interpretation
+#interpretation
 
 ``` r
 library(arulesViz)
