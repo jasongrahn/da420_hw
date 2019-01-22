@@ -44,7 +44,7 @@ summary(mt.mute)
  library(arules)
  # find association rules with default settings
 rules <- apriori(mt.mute)
-head(inspect(rules),15)
+#head(inspect(rules),15)
 ```
 
 ##and now we want to make some rules for high_mpg = TRUE
@@ -57,10 +57,13 @@ rules <- apriori(mt.mute,
                                    default="lhs"),
                  control = list(verbose=F))
 rules.sorted <- sort(rules, by="lift")
+```
 
+```{r include=FALSE}
 #inspect(rules.sorted)
-#gives us 149 rules. egads. Let's head that too.
-head(inspect(rules.sorted),15)
+#gives us 149 rules. egads. 
+#Since we can't head() this, let's just not output it. 
+#(inspect(rules.sorted)
 ```
 
 So we find redundant rules if it's possible! 
@@ -76,9 +79,13 @@ Ok, so which rules are redundant?
 ```{r}
 #putting a head on this because it's rather long
 head(which(redundant),10)
+```
 
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 #Now let's remove redundant rules
 rules.pruned <- rules.sorted[!redundant]
+
+#this can't be head()'d, so no output please. 
 inspect(rules.pruned)
 ```
 
