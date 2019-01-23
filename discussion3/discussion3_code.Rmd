@@ -60,7 +60,8 @@ rules.sorted <- sort(rules, by="lift")
 ```
 
 ```{r include=FALSE}
-#inspect(rules.sorted)
+head(inspect(rules.sorted),5)
+
 #gives us 149 rules. egads. 
 #Since we can't head() this, let's just not output it. 
 #(inspect(rules.sorted)
