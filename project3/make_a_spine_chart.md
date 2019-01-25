@@ -1,30 +1,9 @@
----
-title: "very frustating way to make a spine.chart"
-author: "Jason Grahn"
-date: "1/25/2019"
-output: github_document
-fig_width: 6 
-fig_height: 4 
----
+very frustating way to make a spine.chart
+================
+Jason Grahn
+1/25/2019
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE)
-# R preliminaries to get the user-defined function for spine chart: 
-# place the spine chart code file <R_utility_program_1.R>
-# in your working directory and execute it by
-#     source("R_utility_program_1.R")
-# Or if you have the R binary file in your working directory, use
-
-load(file="mtpa_spine_chart.Rdata")
-# spine chart accommodates up to 45 part-worths on one page
-# |part-worth| <= 40 can be plotted directly on the spine chart
-# |part-worths| > 40 can be accommodated through standardization
-
-library(tibble)
-library(dplyr)
-```
-
-```{r message=FALSE}
+``` r
 # Traditional Conjoint Analysis (R)
 
 print.digits <- 2  # set number of digits on print and spine chart
@@ -74,7 +53,28 @@ conjoint.data.frame <- add_column(conjoint.data.frame, sample(ranklist,
 conjoint.data.frame
 ```
 
-```{r}
+    ## # A tibble: 16 x 10
+    ##    brand startup monthly service retail apple samsung google ranking
+    ##    <chr> <chr>   <chr>   <chr>   <chr>  <chr> <chr>   <chr>    <dbl>
+    ##  1 AT&T  $100    $100    4G NO   Retai… APPL… Samsun… Nexus…      11
+    ##  2 Veri… $300    $100    4G NO   Retai… APPL… Samsun… Nexus…      12
+    ##  3 US C… $400    $200    4G NO   Retai… APPL… Samsun… Nexus…       9
+    ##  4 Veri… $400    $400    4G YES  Retai… APPL… Samsun… Nexus…       2
+    ##  5 Veri… $200    $300    4G NO   Retai… APPL… Samsun… Nexus…       8
+    ##  6 Veri… $100    $200    4G YES  Retai… APPL… Samsun… Nexus…      13
+    ##  7 US C… $300    $300    4G YES  Retai… APPL… Samsun… Nexus…       7
+    ##  8 AT&T  $400    $300    4G NO   Retai… APPL… Samsun… Nexus…       4
+    ##  9 AT&T  $200    $400    4G YES  Retai… APPL… Samsun… Nexus…       5
+    ## 10 T-mo… $400    $100    4G YES  Retai… APPL… Samsun… Nexus…      16
+    ## 11 US C… $100    $400    4G NO   Retai… APPL… Samsun… Nexus…       3
+    ## 12 T-mo… $200    $200    4G NO   Retai… APPL… Samsun… Nexus…       6
+    ## 13 T-mo… $100    $300    4G YES  Retai… APPL… Samsun… Nexus…      10
+    ## 14 US C… $200    $100    4G YES  Retai… APPL… Samsun… Nexus…      15
+    ## 15 T-mo… $300    $400    4G NO   Retai… APPL… Samsun… Nexus…       1
+    ## 16 AT&T  $300    $200    4G YES  Retai… APPL… Samsun… Nexus…      14
+    ## # … with 1 more variable: ranking2 <int>
+
+``` r
 # set up sum contrasts for effects coding as needed for conjoint analysis
 options(contrasts=c("contr.sum","contr.poly"))
 
@@ -87,7 +87,41 @@ main.effects.model.fit <- lm(main.effects.model, data=conjoint.data.frame)
 print(summary(main.effects.model.fit)) 
 ```
 
-```{r}
+    ## 
+    ## Call:
+    ## lm.default(formula = main.effects.model, data = conjoint.data.frame)
+    ## 
+    ## Residuals:
+    ##     1     2     3     4     5     6     7     8     9    10    11    12 
+    ##  0.25 -0.25 -0.25  0.25  0.25 -0.25  0.25 -0.25 -0.25  0.25  0.25  0.25 
+    ##    13    14    15    16 
+    ## -0.25 -0.25 -0.25  0.25 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept)    8.500      0.250  34.000   0.0187 *
+    ## brand1         1.250      0.433   2.887   0.2123  
+    ## brand2         0.250      0.433   0.577   0.6667  
+    ## brand3        -2.000      0.433  -4.619   0.1357  
+    ## startup1       3.000      0.433   6.928   0.0913 .
+    ## startup2      -2.750      0.433  -6.351   0.0994 .
+    ## startup3       1.250      0.433   2.887   0.2123  
+    ## monthly1      -1.500      0.433  -3.464   0.1789  
+    ## monthly2       1.500      0.433   3.464   0.1789  
+    ## monthly3       2.000      0.433   4.619   0.1357  
+    ## service1      -0.125      0.250  -0.500   0.7048  
+    ## retail1        1.250      0.250   5.000   0.1257  
+    ## apple1         2.375      0.250   9.500   0.0668 .
+    ## samsung1       1.875      0.250   7.500   0.0844 .
+    ## google1       -0.875      0.250  -3.500   0.1772  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1 on 1 degrees of freedom
+    ## Multiple R-squared:  0.9971, Adjusted R-squared:  0.9559 
+    ## F-statistic: 24.21 on 14 and 1 DF,  p-value: 0.1581
+
+``` r
 # save key list elements of the fitted model as needed for conjoint measures
 conjoint.results <- 
   main.effects.model.fit[c("contrasts","xlevels","coefficients")]
@@ -171,13 +205,62 @@ for(k in seq(along=conjoint.results$ordered.attributes)) {
   cat(pretty.print(unlist(conjoint.results$attribute.importance
     [conjoint.results$ordered.attributes[k]])))
   }
+```
 
+    ## 
+    ##  
+    ## startup Levels:  $100 $200 $300 $400
+    ##   Part-Worths:  3.00 -2.75 1.25 -1.50
+    ##   Standardized Part-Worths:  1.15 -1.06 0.48 -0.58
+    ##   Attribute Importance:  22.12
+    ##  
+    ## apple Levels:  APPLE NO APPLE YES
+    ##   Part-Worths:  2.37 -2.37
+    ##   Standardized Part-Worths:  0.71 -0.71
+    ##   Attribute Importance:  18.27
+    ##  
+    ## monthly Levels:  $100 $200 $300 $400
+    ##   Part-Worths:  -1.50 1.50 2.00 -2.00
+    ##   Standardized Part-Worths:  -0.73 0.73 0.98 -0.98
+    ##   Attribute Importance:  15.38
+    ##  
+    ## samsung Levels:  Samsung NO Samsung YES
+    ##   Part-Worths:  1.87 -1.87
+    ##   Standardized Part-Worths:  0.71 -0.71
+    ##   Attribute Importance:  14.42
+    ##  
+    ## brand Levels:  AT&T T-mobile US Cellular Verizon
+    ##   Part-Worths:  1.25 0.25 -2.00 0.50
+    ##   Standardized Part-Worths:  0.89 0.18 -1.43 0.36
+    ##   Attribute Importance:  12.50
+    ##  
+    ## retail Levels:  Retail NO Retail YES
+    ##   Part-Worths:  1.25 -1.25
+    ##   Standardized Part-Worths:  0.71 -0.71
+    ##   Attribute Importance:  9.62
+    ##  
+    ## google Levels:  Nexus NO Nexus YES
+    ##   Part-Worths:  -0.87 0.87
+    ##   Standardized Part-Worths:  -0.71 0.71
+    ##   Attribute Importance:  6.73
+    ##  
+    ## service Levels:  4G NO 4G YES
+    ##   Part-Worths:  -0.12 0.12
+    ##   Standardized Part-Worths:  -0.71 0.71
+    ##   Attribute Importance:  0.96
+
+``` r
 # plotting of spine chart begins here
 # all graphical output is routed to external pdf file
 pdf(file = here::here("project3/fig_preference_mobile_services_results.pdf"), width=8.5, height=11)
 spine.chart(conjoint.results)
 dev.off()  # close the graphics output device
+```
 
+    ## png 
+    ##   2
+
+``` r
 # Suggestions for the student:
 # Enter your own rankings for the product profiles and generate
 # conjoint measures of attribute importance and level part-worths.
