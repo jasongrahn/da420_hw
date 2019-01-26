@@ -13,6 +13,19 @@ Part 2
 
 Consider Exhibit 4.1 in page 50-51. Suppose your client is someone other than the local farmer, a meat producer/butcher, dairy, or brewer perhaps. Determine association rules relevant to your client’s products guided by the market basket model. What recommendations would you make about future marketplace actions?
 
+Analysis
+--------
+
+We selected running the market basket analysis for a brewer, and opted to find rules related to "beer".
+
+The results included 6 rules, the strongest of which was for non-alcoholic beer. That is to say, when a consumner purchases non-alcoholic beer, they will also purchase beer. The second highest rule is simply beer by itself. The remaining rules in order are bread and baked goods, vegetables, fruit, and dairy produce.
+
+Given these rules, it makes sense that the brewer investigate producing a non-alcoholic beer of their own if they haven't already. Given the high association of non-alcoholic beer with beer, consumer confidence in a non-alcoholic beer could lead to purchases of the same companies' alcoholic beer as well, as "birds of a feather." The remaining rules indicate purchases of items used for cookouts (bread/baked goods, veggies, fruit, and dairy produce). Dairy produce in this case could be cheeses, while bread and baked goods could related to hotdog and hamburger buns.
+
+Additionally, it makes market-sense for the brewer to align their product with a "friendly" supplier of breads and dairy. Perhaps they might offer coupons or discounts to select grocery stores; when customers purchase a these associated products, they receive a discount on beer. As an alternative, purchasing beer of their brand could enable discounts on select breads and baked products.
+
+Given the relationship of beer to these items, we must also inquire toward the seasonality of the data-set. This merits additional study to determine if decisions made now might only be good for a small window of time during the year.
+
 ``` r
 # Association Rules for Market Basket Analysis (R)
 
@@ -24,9 +37,9 @@ data(Groceries)  # grocery transactions object from arules package
 
 # examine frequency for each item with support greater than 0.025
 itemFrequencyPlot(Groceries, support = 0.025, cex.names=0.8, xlim = c(0,0.3),
-  type = "relative", horiz = TRUE, col = "dark red", las = 1,
-  xlab = paste("Proportion of Market Baskets Containing Item",
-    "\n(Item Relative Frequency or Support)"))
+                  type = "relative", horiz = TRUE, col = "light blue", las = 1,
+                  xlab = paste("Proportion of Market Baskets Containing Item",
+                               "\n(Item Relative Frequency or Support)"))
 ```
 
 ![](da420_project3_grahn_files/figure-markdown_github/unnamed-chunk-1-1.png)
@@ -91,31 +104,20 @@ print(levels(itemInfo(Groceries)[["level2"]]))  # 55 distinct levels
 # to create a more meaningful set of items
 groceries <- aggregate(Groceries, itemInfo(Groceries)[["level2"]])  
 
-print(dim(groceries)[1])  # 9835 market baskets for shopping trips
-```
-
-    ## [1] 9835
-
-``` r
-print(dim(groceries)[2])  # 55 final store items (categories)  
-```
-
-    ## [1] 55
-
-``` r
+#print(dim(groceries)[1])  # 9835 market baskets for shopping trips
+#print(dim(groceries)[2])  # 55 final store items (categories)  
 itemFrequencyPlot(groceries, support = 0.025, cex.names=1.0, xlim = c(0,0.5),
-  type = "relative", horiz = TRUE, col = "blue", las = 1,
-  xlab = paste("Proportion of Market Baskets Containing Item",
-    "\n(Item Relative Frequency or Support)"))
+                  type = "relative", horiz = TRUE, col = "dark blue", las = 1,
+                  xlab = paste("Proportion of Market Baskets Containing Item",
+                               "\n(Item Relative Frequency or Support)"))
 ```
 
-![](da420_project3_grahn_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](da420_project3_grahn_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ``` r
 # obtain large set of association rules for items by category and all shoppers
 # this is done by setting very low criteria for support and confidence
-first.rules <- apriori(groceries, 
-  parameter = list(support = 0.001, confidence = 0.05))
+first.rules <- apriori(groceries, parameter = list(support = 0.001, confidence = 0.05))
 ```
 
     ## Apriori
@@ -136,14 +138,13 @@ first.rules <- apriori(groceries,
     ## set transactions ...[55 item(s), 9835 transaction(s)] done [0.00s].
     ## sorting and recoding items ... [54 item(s)] done [0.00s].
     ## creating transaction tree ... done [0.00s].
-    ## checking subsets of size 1 2 3 4 5 6 7 8 done [0.01s].
+    ## checking subsets of size 1 2 3 4 5 6 7 8 done [0.02s].
     ## writing ... [69921 rule(s)] done [0.01s].
-    ## creating S4 object  ... done [0.01s].
+    ## creating S4 object  ... done [0.02s].
 
 ``` r
 # select association rules using thresholds for support and confidence 
-second.rules <- apriori(groceries, 
-  parameter = list(support = 0.025, confidence = 0.05))
+second.rules <- apriori(groceries, parameter = list(support = 0.025, confidence = 0.05))
 ```
 
     ## Apriori
@@ -171,24 +172,25 @@ second.rules <- apriori(groceries,
 ``` r
 # data visualization of association rules in scatter plot
 plot(second.rules, 
-  control=list(jitter=2, col = rev(brewer.pal(9, "Greens")[4:9])),
-  shading = "lift")   
-```
-
-![](da420_project3_grahn_files/figure-markdown_github/unnamed-chunk-3-1.png)
-
-``` r
-# grouped matrix of rules 
-plot(second.rules, method="grouped",   
-  control=list(col = rev(brewer.pal(9, "Greens")[4:9])))
+     control=list(jitter=2, 
+                  col = rev(brewer.pal(9, "Greens")[4:9])),
+     shading = "lift")
 ```
 
 ![](da420_project3_grahn_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 ``` r
+# grouped matrix of rules is too clustered to show anything
+plot(second.rules, method="grouped",   
+  control=list(col = rev(brewer.pal(9, "Greens")[4:9])))
+```
+
+![](da420_project3_grahn_files/figure-markdown_github/unnamed-chunk-5-1.png)
+
+``` r
 # select rules with vegetables in consequent (right-hand-side) item subsets
 beer.rules <- subset(second.rules, subset = rhs %pin% "beer")
-inspect(beer.rules)  # 41 rules
+inspect(beer.rules)  # 6 rules
 ```
 
     ##     lhs                         rhs    support    confidence lift     
@@ -227,6 +229,15 @@ inspect(top.beer.rules)
     ## [5]  268 
     ## [6]  452
 
+Or visually:
+
+``` r
+plot(top.beer.rules, method="grouped",   
+  control=list(col = rev(brewer.pal(9, "Greens")[4:9])))
+```
+
+![](da420_project3_grahn_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
 ``` r
 plot(top.beer.rules, method="graph", 
   control=list(type="items"), 
@@ -255,4 +266,4 @@ plot(top.beer.rules, method="graph",
     ## max   =  100
     ## verbose   =  FALSE
 
-![](da420_project3_grahn_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](da420_project3_grahn_files/figure-markdown_github/unnamed-chunk-9-1.png)
