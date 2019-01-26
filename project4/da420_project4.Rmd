@@ -6,10 +6,13 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 library(tidyverse)
 library(lubridate)
 ```
+
+# Use R to develop a Multiple Time Series Plot, as seen in Figure 5.1. 
+Make sure you include the command lines and the output/results
 
 ```{r}
 eco_mutate <- economics %>% 
@@ -19,9 +22,12 @@ eco_mutate <- economics %>%
   gather(key = metric_name, value = measurement, pce, pop, psavert, uempmed, unemploy)
 
 eco_mutate %>% 
+  filter(decade %in% c("1990", "2000","2010")) %>% 
   ggplot(aes(x = date, y = measurement, color = decade)) +
   geom_line() +
   facet_grid(metric_name ~ ., scales = "free_y") +
   theme_classic() +
   theme(legend.position = "bottom")
 ```
+
+# Interpret the graph in details
