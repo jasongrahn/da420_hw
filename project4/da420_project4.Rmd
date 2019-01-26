@@ -1,0 +1,27 @@
+---
+title: "da420_assignment4"
+author: "Jason Grahn"
+date: "1/26/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+```
+
+```{r}
+eco_mutate <- economics %>% 
+  mutate(years = year(date),
+         months = month(date),
+         decade = factor(round(years / 10) * 10)) %>% 
+  gather(key = metric_name, value = measurement, pce, pop, psavert, uempmed, unemploy)
+
+eco_mutate %>% 
+  ggplot(aes(x = date, y = measurement, color = decade)) +
+  geom_line() +
+  facet_grid(metric_name ~ ., scales = "free_y") +
+  theme_classic() +
+  theme(legend.position = "bottom")
+```
