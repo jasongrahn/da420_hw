@@ -1,17 +1,9 @@
----
-title: "da420_homework4"
-author: "Jason Grahn"
-date: "1/26/2019"
-output: github_document
----
+da420\_homework4
+================
+Jason Grahn
+1/26/2019
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE)
-library(tidyverse)
-library(lubridate)
-```
-
-```{r}
+``` r
 # download from: http://ie.technion.ac.il/serveng/callcenterdata/index.html, 
 #   http://ie.technion.ac.il/serveng/callcenterdata/FebruaryTxt.ZIP
 
@@ -48,10 +40,6 @@ long_call_summary %>%
   theme(legend.position = "none") +
   labs(title= "Days of the week and % of calls with wait above 120 seconds",
        subtitle = "Sunday and Monday need staffing attention to bring rate lower")
-  
 ```
 
-```{r}
-
-```
-
+![](da420_assignment4_report_files/figure-markdown_github/unnamed-chunk-1-1.png)
