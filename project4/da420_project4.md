@@ -1,31 +1,19 @@
----
-title: "da420_project4"
-author: "Jason Grahn"
-date: "1/26/2019"
-output: github_document
----
+da420\_project4
+================
+Jason Grahn
+1/26/2019
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE)
-# Analysis of Economic Time Series (R)
-
-# economic time series gathered with this program are continually
-# updated... so predictive models, forecasts, and data visualizations
-# produced by this program may differ from those shown in the book
-
-library(quantmod) # use for gathering and charting economic data
-library(lubridate) # date functions
-library(latticeExtra) # package used for horizon plot
-library(forecast) # functions for time series forecasting 
-library(lmtest) # for Granger test of causality
-```
-
-```{r message=FALSE}
+``` r
 par(mfrow = c(2,2)) # four plots on one window/page
 
 # Economic Data from Federal Reserve Bank of St. Louis (FRED system)
 # National Civilian Unemployment Rate (monthly, percentage)
 getSymbols("UNRATENSA", src="FRED", return.class = "xts")
+```
+
+    ## [1] "UNRATENSA"
+
+``` r
 ER <- 100 - UNRATENSA # convert to employment rate
 dimnames(ER)[2] <- "ER"
 # chartSeries(ER,theme="white")
@@ -37,9 +25,14 @@ ER.time.series <- ts(ER.data.frame$ER,
   frequency=12)
 ```
 
-```{r}
+``` r
 # Manufacturers' New Orders: Durable Goods (millions of dollars) 
 getSymbols("DGORDER", src="FRED", return.class = "xts")
+```
+
+    ## [1] "DGORDER"
+
+``` r
 DGO <- DGORDER/1000 # convert to billions of dollars
 dimnames(DGO)[2] <- "DGO" # use simple name for index
 # chartSeries(DGO, theme="white") 
@@ -52,9 +45,14 @@ DGO.time.series <- ts(DGO.data.frame$DGO,
   frequency=12)
 ```
 
-```{r}
+``` r
 # University of Michigan Index of Consumer Sentiment (1Q 1966 = 100)
 getSymbols("UMCSENT", src="FRED", return.class = "xts")
+```
+
+    ## [1] "UMCSENT"
+
+``` r
 ICS <- UMCSENT # use simple name for xts object
 dimnames(ICS)[2] <- "ICS" # use simple name for index
 # chartSeries(ICS, theme="white")
@@ -67,9 +65,14 @@ ICS.time.series <- ts(ICS.data.frame$ICS,
   frequency=12)
 ```
 
-```{r}
+``` r
 # New Homes Sold in the US, not seasonally adjusted (monthly, millions)
 getSymbols("HSN1FNSA",src="FRED",return.class = "xts")
+```
+
+    ## [1] "HSN1FNSA"
+
+``` r
 NHS <- HSN1FNSA
 dimnames(NHS)[2] <- "NHS" # use simple name for index
 # chartSeries(NHS, theme="white")
@@ -82,7 +85,7 @@ NHS.time.series <- ts(NHS.data.frame$NHS,
   frequency=12)
 ```
 
-```{r}
+``` r
 # define multiple time series object
 economic.mts <- cbind(ER.time.series, DGO.time.series, ICS.time.series,
   NHS.time.series) 
@@ -92,6 +95,10 @@ modeling.mts <- na.omit(economic.mts) # keep overlapping time intervals only
 # plot multiple time series 
 #pdf(file="fig_economic_analysis_mts_R.pdf",width = 8.5,height = 11)    
 plot(modeling.mts,main="")
-#dev.off()
 ```
 
+![](da420_project4_files/figure-markdown_github/unnamed-chunk-5-1.png)
+
+``` r
+#dev.off()
+```
