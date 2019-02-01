@@ -16,7 +16,7 @@ getSymbols("UNRATENSA", src="FRED", return.class = "xts")
 ``` r
 ER <- 100 - UNRATENSA # convert to employment rate
 dimnames(ER)[2] <- "ER"
-# chartSeries(ER,theme="white")
+
 ER.data.frame <- as.data.frame(ER)
 ER.data.frame$date <- ymd(rownames(ER.data.frame))
 ER.time.series <- ts(ER.data.frame$ER, 
@@ -35,7 +35,7 @@ getSymbols("DGORDER", src="FRED", return.class = "xts")
 ``` r
 DGO <- DGORDER/1000 # convert to billions of dollars
 dimnames(DGO)[2] <- "DGO" # use simple name for index
-# chartSeries(DGO, theme="white") 
+
 DGO.data.frame <- as.data.frame(DGO)
 DGO.data.frame$DGO <- DGO.data.frame$DGO
 DGO.data.frame$date <- ymd(rownames(DGO.data.frame))
@@ -55,7 +55,7 @@ getSymbols("UMCSENT", src="FRED", return.class = "xts")
 ``` r
 ICS <- UMCSENT # use simple name for xts object
 dimnames(ICS)[2] <- "ICS" # use simple name for index
-# chartSeries(ICS, theme="white")
+
 ICS.data.frame <- as.data.frame(ICS)
 ICS.data.frame$ICS <- ICS.data.frame$ICS
 ICS.data.frame$date <- ymd(rownames(ICS.data.frame))
@@ -75,7 +75,7 @@ getSymbols("HSN1FNSA",src="FRED",return.class = "xts")
 ``` r
 NHS <- HSN1FNSA
 dimnames(NHS)[2] <- "NHS" # use simple name for index
-# chartSeries(NHS, theme="white")
+
 NHS.data.frame <- as.data.frame(NHS)
 NHS.data.frame$NHS <- NHS.data.frame$NHS
 NHS.data.frame$date <- ymd(rownames(NHS.data.frame))
@@ -93,12 +93,18 @@ dimnames(economic.mts)[[2]] <- c("ER","DGO","ICS","NHS") # keep simple names
 modeling.mts <- na.omit(economic.mts) # keep overlapping time intervals only
 
 # plot multiple time series 
-#pdf(file="fig_economic_analysis_mts_R.pdf",width = 8.5,height = 11)    
 plot(modeling.mts,main="")
 ```
 
 ![](da420_project4_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-``` r
-#dev.off()
-```
+Interpret the graph in details.
+===============================
+
+Most obvious when reading thr grpahs is the major downturn events. The largest occured in (what appears to be) 2007 or 2008; though there is a less perceptiable event that seems to occur in 2002 or 2003. The first indicator on the larger event seems to appear in the **NHS** graph as it starts to slope down in late 2005 / early 2006, this is commonly referred to as a *leading indicator*[1] because this indicator changed before an event, or as the first indicator noting an event is occuring. The other indicators can be referred to as *lagging indicators*[2] because they only ever follow an event. When we review the smaller event (2002/2003) we get more definition from DGO and ER.
+
+After noticing the alingment to the major dip in all the graphs, we turn our eye to the nuace of each graph. The two graphs with very apparent seasonality are the **NHS** and **ER** graphs. With NHS, we have very obvious early seasonality that's quite pronounced prior to the downturn, that takes approximatly 6 years to get back into the same cadence. ER appears to be 6 month dips, but it's difficult to say given the axis is so far removed from the graph. DGO also shows signs of monthly seasonality - though definitely less pronounced - however, it seems that DGO has an approximately 5 year seasonal trend as well. In regards to seasonality, ICS is seemingly volitile, with an incredible amount of variance all through out the date rance.
+
+[1] <https://www.investopedia.com/terms/l/leadingindicator.asp>
+
+[2] <https://www.investopedia.com/terms/l/laggingindicator.asp>
