@@ -319,7 +319,9 @@ value <- schedule.fit.to.need <-
   constraint.matrix %*% call.center.schedule$solution
 solution.data.frame <- data.frame(hour, value, type) 
 plotting.data.frame <- rbind(needs.data.frame, solution.data.frame)
+```
 
+```{r}
 plotting.data.frame.mod <- plotting.data.frame %>% 
   tidyr::spread(key = type, value = value) %>% 
   mutate(delta_rate = round(Hourly_Need / Optimal_Solution, 2),
@@ -344,6 +346,7 @@ background <- plotting.data.frame.mod %>%
   labs(y = " ",
        x = " ") 
 
+background
 ```
 
 ```{r}
