@@ -344,6 +344,9 @@ background <- plotting.data.frame.mod %>%
   labs(y = " ",
        x = " ") 
 
+```
+
+```{r}
 ggsave(file="test.svg", plot=background)
 
 img <- imager::load.image("test.svg") 
