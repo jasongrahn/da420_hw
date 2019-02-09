@@ -75,8 +75,6 @@ for(index.for.hour in 1:24) {
 # compute arrival rate as average number of calls into VRU per hour
 hourly.arrival.rate <- calls.for.hour/4  # four Wednesdays in February
 
-# service times can vary hour-by-hour due to differences 
-# in service requests and individuals calling hour-by-hour
 # begin by selecting calls that receive service
 thursdays.served <- subset(thursdays, subset = (server != "NO_SERVER"))
 
@@ -106,8 +104,6 @@ value <- hourly.served.rate
 service.data.frame <- data.frame(hour, value, type) 
 arrival.service.data.frame <- rbind(arrival.data.frame, service.data.frame)
 
-#pdf(file = "fig_operations_management_wednesdays_arrived_served.pdf", 
-#  width = 11, height = 8.5)
 plotting.object <- ggplot(data = arrival.service.data.frame, 
   aes(x = hour, y = value, fill = type)) + 
   geom_line() +
@@ -118,7 +114,7 @@ plotting.object <- ggplot(data = arrival.service.data.frame,
     labels = 
       c("00","02","04","06","08","10","12","14","16","18","20","22","24")) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1)) +
-  labs(x = "Hour of Day (24-Hour Clock)", y = "Average Calls per Hour") +
+  labs(x = "Hour of Day using 24-Hour Clock", y = "Average Calls per Hour") +
   scale_fill_manual(values = c("red","dark blue"), 
     guide = guide_legend(title = NULL))  +
   theme(legend.position = c(1,1), legend.justification = c(1,1)) +
@@ -130,6 +126,13 @@ plotting.object
 
 ![](da420_project5_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
-``` r
-#dev.off()
-```
+Interpretation
+==============
+
+My initial reaction to the chart is that few hours are accurately staffed and I would like to see how many agents are on staff at any given hour inside this chart as well - possibly as a secondary Y-axis. If the business rules are such that *zero* calls are abandoned, we would want the dark-blue "Served" line to be equal or greater-than the red "Arrived" line. As we look through the delta we see there are areas more interesting than others. The calls volumes are bimodal, with two **peak** call arrival times; first during the 9am hour and second during the 1600 (4pm) hour. I believe the 9am peak needs specific attention to make sure agents are not overwhelmed, cascading effects through the rest of the day.
+
+The mid-day spread requires attention. Only as people return from lunch and get back to work (1300 / 1pm-ish), do we receive reprieve. However, it's likely that as we lagged behind in calls in the morning, effects have compounded. We observe our two largest deltas at at 1500 (3pm) and 1600 (4pm). While it's likely need to staff more agents across all daylight hours to overcome the Arrival of calls we need more agents in the afternoon to prevent customer frustration as we work toward closing hours.
+
+We are just *barely* under the requirements between 1900 (7pm) through 0600 (6am); so it's likely one additional staff could start later in the evening to take up the slack during this shift until midnight. Bringing on another staff member earlier in the morning might be more costly, but it could account for the small delta at 5, 6, and 7am; before we start to hit the larger morning volume.
+
+Additional investigation should be done to determine what drives AM calls versus PM calls; and if we can move these drivers into self-service via the website, or make the questions and answers possible via phone system automation.
