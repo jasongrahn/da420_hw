@@ -1,25 +1,11 @@
----
-title: "da420_project5"
-author: "Jason Grahn"
-date: "2/2/2019"
-output: github_document
----
+da420\_project5
+================
+Jason Grahn
+2/2/2019
 
-Use R to develop a “Call Center Arrival and Service Rates on Thursday”, similar to Figure 6.7 
-in page 72. Make sure you include the command lines and the output/results. 
-Interpret the graph in details.
+Use R to develop a “Call Center Arrival and Service Rates on Thursday”, similar to Figure 6.7 in page 72. Make sure you include the command lines and the output/results. Interpret the graph in details.
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-library(lubridate)  # date functions
-library(grid)  # graphics utilities needed for split-plotting
-library(ggplot2)  # graphics package with ribbon plot
-library(queueing)  # queueing functions, including Erlang C
-library(lpSolve)  # linear programming package
-```
-
-```{r message=FALSE}
+``` r
 # Workforce Scheduling for Anonymous Bank Call Center (R)
 # source("R_utility_program_3.R") provides split-plotting utilities
 load("mtpa_split_plotting_utilities.Rdata")
@@ -70,7 +56,7 @@ day.of.week.list <- c("Monday","Tuesday",
   "Wednesday","Thursday","Friday","Sunday")
 ```
 
-```{r}
+``` r
 # select Wednesdays in February for the queueing model
 thursdays <- subset(call.center.data, subset = (day_of_week == "Thursday"))
 
@@ -132,7 +118,7 @@ plotting.object <- ggplot(data = arrival.service.data.frame,
     labels = 
       c("00","02","04","06","08","10","12","14","16","18","20","22","24")) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1)) +
-  labs(x = "Hour of Day using 24-Hour Clock", y = "Average Calls per Hour") +
+  labs(x = "Hour of Day (24-Hour Clock)", y = "Average Calls per Hour") +
   scale_fill_manual(values = c("red","dark blue"), 
     guide = guide_legend(title = NULL))  +
   theme(legend.position = c(1,1), legend.justification = c(1,1)) +
@@ -140,9 +126,10 @@ plotting.object <- ggplot(data = arrival.service.data.frame,
   coord_fixed(ratio = 1/10)    
 
 plotting.object
-#dev.off()
 ```
 
+![](da420_project5_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
-
-
+``` r
+#dev.off()
+```
