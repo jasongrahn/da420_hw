@@ -7,9 +7,9 @@ The instructor has us blindly running the code from <https://blog.revolutionanal
 
 So, I'm running it. But this is a better resource: <http://www.rdatamining.com/examples/association-rules>
 
-I'll run this on mtcars.
+going to try running it on mtcars,
 
-Have to load `MTcars` and make the columns into factors
+Have to load `MTcars` and make get the factor columns
 -----------------------------------------------------
 
 ``` r
@@ -32,12 +32,12 @@ idx <- sample(1:nrow(mt.mute), 5)
 mt.mute[idx, ]
 ```
 
-    ##   cyl vs am gear carb high_mpg
-    ## 1   4  1  1    4    1     TRUE
-    ## 7   6  0  1    4    4    FALSE
-    ## 4   4  1  1    4    1     TRUE
-    ## 5   4  0  1    5    2     TRUE
-    ## 9   4  1  1    4    1    FALSE
+    ##    cyl vs am gear carb high_mpg
+    ## 11   8  0  0    3    2    FALSE
+    ## 14   4  1  0    4    2    FALSE
+    ## 6    4  1  1    5    2     TRUE
+    ## 4    4  1  1    4    1     TRUE
+    ## 2    4  1  1    4    2     TRUE
 
 ``` r
 summary(mt.mute)
@@ -109,7 +109,7 @@ rules <- apriori(mt.mute)
 #head(inspect(rules),15)
 ```
 
-And now we want to make some rules for high\_mpg = TRUE
+and now we want to make some rules for high\_mpg = TRUE
 -------------------------------------------------------
 
 ``` r
@@ -123,7 +123,7 @@ rules <- apriori(mt.mute,
 rules.sorted <- sort(rules, by="lift")
 ```
 
-#So we find redundant rules if it's possible!
+So we find redundant rules if it's possible!
 
 ``` r
 # find redundant rules
@@ -138,7 +138,7 @@ subset.matrix[lower.tri(subset.matrix, diag=T)] <- NA
 redundant <- colSums(subset.matrix, na.rm=T) >= 1
 ```
 
-#Ok, so which rules are redundant?
+Ok, so which rules are redundant?
 
 ``` r
 #putting a head on this because it's rather long
@@ -164,7 +164,7 @@ rules.pruned <- rules.sorted[!redundant]
 inspect(rules.pruned)
 ```
 
-#interpretation
+interpretation
 
 ``` r
 library(arulesViz)
