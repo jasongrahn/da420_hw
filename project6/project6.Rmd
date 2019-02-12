@@ -11,12 +11,13 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 ## A Tidytext example from https://www.tidytextmining.com/ would be more modern and applicable for student learning. 
 
 ## Instead, let's install a bunch of dead packages because this code is old and out of date. 
-# note the original URL is dead too. replace the .org with .net and the download works correctly. 
 
 require(devtools)
 
+# install_url("http://www.omegahat.org/Rstem/Rstem_0.4-1.tar.gz") ## this is a dead URL
+
+# note the original URL is dead too. replace the .org with .net and the download works correctly. 
 # install_url("http://www.omegahat.net/Rstem/Rstem_0.4-1.tar.gz")
-# install_url("https://cran.r-project.org/src/contrib/Archive/Rstem/Rstem_0.4-1.tar.gz")
 # install_url("http://cran.r-project.org/src/contrib/Archive/sentiment/sentiment_0.1.tar.gz")
 # install_url("http://cran.r-project.org/src/contrib/Archive/sentiment/sentiment_0.2.tar.gz")
 ```
