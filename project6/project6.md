@@ -4,6 +4,40 @@ Jason Grahn
 2/11/2019
 
 ``` r
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+
+## A Tidytext example from https://www.tidytextmining.com/ would more modern, applicable, and condusive for student learning. 
+
+## Instead, let's install a bunch of dead packages because this code is old and out of date. 
+# note the original URL is dead too. replace the .org with .net and the download works correctly. 
+
+require(devtools)
+
+# install_url("http://www.omegahat.net/Rstem/Rstem_0.4-1.tar.gz")
+# install_url("https://cran.r-project.org/src/contrib/Archive/Rstem/Rstem_0.4-1.tar.gz")
+# install_url("http://cran.r-project.org/src/contrib/Archive/sentiment/sentiment_0.1.tar.gz")
+# install_url("http://cran.r-project.org/src/contrib/Archive/sentiment/sentiment_0.2.tar.gz")
+```
+
+``` r
+##  It's incredibly bad practice to ship code that asks for packages to be installed. This would be better as a docker image. 
+
+# install.packages("plyr") 
+# install.packages("ggplot2") 
+# install.packages("wordcloud") 
+# install.packages("RColorBrewer") 
+# install.packages("tm") 
+# install.packages("SnowballC")
+
+library(tidyverse)
+library(wordcloud)
+library(RColorBrewer)
+library(tm)
+library(SnowballC)
+library(sentiment)
+```
+
+``` r
 data <- readLines("http://www.r-bloggers.com/wp-content/uploads/2016/01/vent.txt") 
  # from: http://www.wvgazettemail.com/ 
 df <- data.frame(data) 

@@ -5,10 +5,10 @@ date: "2/11/2019"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 
-## A Tidytext example from https://www.tidytextmining.com/ would more modern, applicable, and condusive for student learning. 
+## A Tidytext example from https://www.tidytextmining.com/ would be more modern and applicable for student learning. 
 
 ## Instead, let's install a bunch of dead packages because this code is old and out of date. 
 # note the original URL is dead too. replace the .org with .net and the download works correctly. 
@@ -21,7 +21,7 @@ require(devtools)
 # install_url("http://cran.r-project.org/src/contrib/Archive/sentiment/sentiment_0.2.tar.gz")
 ```
 
-```{r load required packages, echo=FALSE}
+```{r load required packages, message=FALSE}
 ##  It's incredibly bad practice to ship code that asks for packages to be installed. This would be better as a docker image. 
 
 # install.packages("plyr") 
