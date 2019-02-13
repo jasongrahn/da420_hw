@@ -122,4 +122,6 @@ comparison.cloud(tdm,
                  scale = c(3,.5), 
                  random.order = FALSE,
                  title.size = 1.5)
+# emailed winnie through canvas on 2019-02-13 for help. 
+
 ```
