@@ -18,12 +18,11 @@ require(devtools)
 
 # note the original URL is dead too. replace the .org with .net and the download works correctly. 
 # install_url("http://www.omegahat.net/Rstem/Rstem_0.4-1.tar.gz")
-# install_url("http://cran.r-project.org/src/contrib/Archive/sentiment/sentiment_0.1.tar.gz")
 # install_url("http://cran.r-project.org/src/contrib/Archive/sentiment/sentiment_0.2.tar.gz")
 ```
 
 ```{r load required packages, message=FALSE}
-##  It's incredibly bad practice to ship code that asks for packages to be installed. This would be better as a docker image. 
+##  It's incredibly bad practice to ship code that asks for packages to be installed. This would be better as a docker image or a use_this:: package.
 
 # install.packages("plyr") 
 # install.packages("ggplot2") 
@@ -46,7 +45,6 @@ data <- readLines("http://www.r-bloggers.com/wp-content/uploads/2016/01/vent.txt
 df <- data.frame(data) 
 textdata <- df[df$data, ] 
 textdata = gsub("[[:punct:]]", "", textdata)
-
 ```
 
 ```{r}
@@ -78,7 +76,9 @@ polarity = class_pol[,4]
 
 sent_df = data.frame(text=textdata, emotion=emotion, polarity=polarity, stringsAsFactors=FALSE)
 
-sent_df = within(sent_df, emotion <- factor(emotion, levels=names(sort(table(emotion), decreasing=TRUE))))
+sent_df = within(sent_df, emotion <- factor(emotion, 
+                                            levels=names(sort(table(emotion), 
+                                                                       decreasing=TRUE))))
 ```
 
 ```{r}
@@ -117,10 +117,9 @@ tdm = TermDocumentMatrix(corpus)
 colnames(tdm) = emos
 
 ## unsure why this doesn't work: 
-#comparison.cloud(tdm, 
-#                 colors = brewer.pal(nemo, "Dark2"),
-#                 scale = c(3,.5), 
-#                 random.order = FALSE,
-#                 title.size = 1.5)
+comparison.cloud(tdm, 
+                 colors = brewer.pal(nemo, "Dark2"),
+                 scale = c(3,.5), 
+                 random.order = FALSE,
+                 title.size = 1.5)
 ```
-
