@@ -1,4 +1,4 @@
-fuck this class
+[title redacted]
 ================
 Jason Grahn
 1/25/2019
