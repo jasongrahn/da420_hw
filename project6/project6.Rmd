@@ -102,7 +102,7 @@ polarity_plot <- ggplot(sent_df, aes(x=polarity)) +
 cowplot::plot_grid(emotion_plot,polarity_plot)
 ```
 
-```{r message=FALSE, warning=FALSE}
+```{r}
 emos = levels(factor(sent_df$emotion))
 nemo = length(emos)
 emo.docs = rep("", nemo)
@@ -117,7 +117,9 @@ corpus = Corpus(VectorSource(emo.docs))
 tdm = TermDocumentMatrix(corpus)
 tdm = as.matrix(tdm)
 colnames(tdm) = emos
+```
 
+```{r}
 comparison.cloud(tdm, 
                  colors = brewer.pal(nemo, "Dark2"),
                  scale = c(3,.5), 
