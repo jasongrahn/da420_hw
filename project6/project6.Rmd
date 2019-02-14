@@ -40,6 +40,7 @@ library(sentiment)
 ```
 
 ```{r get the data}
+set.seed(42)
 data <- readLines("http://www.r-bloggers.com/wp-content/uploads/2016/01/vent.txt") 
  # from: http://www.wvgazettemail.com/ 
 df <- data.frame(data) 
@@ -101,7 +102,7 @@ polarity_plot <- ggplot(sent_df, aes(x=polarity)) +
 cowplot::plot_grid(emotion_plot,polarity_plot)
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 emos = levels(factor(sent_df$emotion))
 nemo = length(emos)
 emo.docs = rep("", nemo)
@@ -114,14 +115,12 @@ for (i in 1:nemo){
 emo.docs = removeWords(emo.docs, stopwords("english"))
 corpus = Corpus(VectorSource(emo.docs))
 tdm = TermDocumentMatrix(corpus)
+tdm = as.matrix(tdm)
 colnames(tdm) = emos
 
-## unsure why this doesn't work: 
 comparison.cloud(tdm, 
                  colors = brewer.pal(nemo, "Dark2"),
                  scale = c(3,.5), 
                  random.order = FALSE,
                  title.size = 1.5)
-# emailed winnie through canvas on 2019-02-13 for help. 
-
 ```
