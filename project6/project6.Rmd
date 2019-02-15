@@ -1,20 +1,25 @@
 ---
-title: "project6"
+title: "Project 06"
 author: "Jason Grahn"
-date: "2/11/2019"
-output: github_document
+date: "2/15/2019"
+output: word_document
+fig_width: 6 
+fig_height: 6
 ---
 
 ```{r setup, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 
-## A Tidytext example from https://www.tidytextmining.com/ would be more modern and applicable for student learning. 
+## A Tidytext example from https://www.tidytextmining.com/ would be 
+## more modern and applicable for student learning. 
 
-## Instead, let's install a bunch of dead packages because this code is old and out of date. 
+## Instead, let's install a bunch of dead packages because this code 
+## is old and out of date. 
 
 require(devtools)
 
-# install_url("http://www.omegahat.org/Rstem/Rstem_0.4-1.tar.gz") ## this is a dead URL
+# install_url("http://www.omegahat.org/Rstem/Rstem_0.4-1.tar.gz") 
+## this is a dead URL
 
 # note the original URL is dead too. replace the .org with .net and the download works correctly. 
 # install_url("http://www.omegahat.net/Rstem/Rstem_0.4-1.tar.gz")
@@ -82,7 +87,7 @@ sent_df = within(sent_df, emotion <- factor(emotion,
                                                                        decreasing=TRUE))))
 ```
 
-```{r}
+```{r out.width="90%"}
 emotion_plot <- ggplot(sent_df, aes(x=emotion)) + 
   geom_bar(aes(y=..count.., fill=emotion)) + 
   scale_fill_brewer(palette="Dark2") + 
@@ -119,7 +124,7 @@ tdm = as.matrix(tdm)
 colnames(tdm) = emos
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE, out.width="90%"}
 comparison.cloud(tdm, 
                  colors = brewer.pal(nemo, "Dark2"),
                  scale = c(3,.5), 
