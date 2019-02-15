@@ -2,9 +2,7 @@
 title: "Project 06"
 author: "Jason Grahn"
 date: "2/15/2019"
-output: word_document
-fig_width: 6 
-fig_height: 6
+output: github_document
 ---
 
 ```{r setup, message=FALSE}
@@ -94,7 +92,8 @@ emotion_plot <- ggplot(sent_df, aes(x=emotion)) +
   labs(title = "Emotion Categories",
        x="", 
        y="") +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  ylim(0,55)
 
 polarity_plot <- ggplot(sent_df, aes(x=polarity)) +
   geom_bar(aes(y=..count.., fill=polarity)) +
@@ -102,7 +101,8 @@ polarity_plot <- ggplot(sent_df, aes(x=polarity)) +
   labs(title="Polarity Categories", 
        x = "",
        y="") +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  ylim(0,55)
 
 cowplot::plot_grid(emotion_plot,polarity_plot)
 ```
