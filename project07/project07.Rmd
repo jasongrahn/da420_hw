@@ -17,22 +17,14 @@ library(RColorBrewer)
 library(rstudioapi)
 ```
 
-```{r this should be secure}
-api_key <- askForSecret(name = "api_key", 
-             message = "Gimme that API key",
-             title = paste(name, "Secret"))
+```{r this should be secure, message=FALSE, warning=FALSE, include=FALSE}
+api_key <- getPass::getPass(msg = "Gimme that API key")
 
-api_secret <- askForSecret(name = "api_secret", 
-             message = "Gimme that API Secret",
-             title = paste(name, "Secret"))
+api_secret <- getPass::getPass(msg = "Gimme that API Secret")
 
-token <- askForSecret(name = "token", 
-             message = "Gimme that token",
-             title = paste(name, "Secret"))
+token <- getPass::getPass(msg = "Gimme that token")
 
-token_secret <- askForSecret(name = "token_secret", 
-             message = "Gimme that token secret",
-             title = paste(name, "Secret"))
+token_secret <- getPass::getPass(msg = "Gimme that token secret")
 
 setup_twitter_oauth(api_key, 
                     api_secret, 
@@ -49,7 +41,7 @@ some_txt <- sapply(some_tweets, function(x) x$getText())
 ```
 
 ```{r write some_tweets to rdata, eval=FALSE, include=FALSE}
-save(some_tweets, file=here::here("project07/data/some_tweets.Rdata"))
+#save(some_tweets, file=here::here("project07/some_tweets.Rdata"))
 ```
 
 
@@ -133,7 +125,8 @@ ggplot(sent_df, aes(x=emotion)) +
   labs(x="emotion categories", 
        y="number of tweets",
        title = "Sentiment Analysis of Tweets about Starbucks",
-       subtitle = "classification by emotion")
+       subtitle = "classification by emotion") +
+  theme(legend.position = "none")
 
 # plot distribution of polarity
 ggplot(sent_df, aes(x=polarity)) +
@@ -142,7 +135,8 @@ ggplot(sent_df, aes(x=polarity)) +
   labs(x="polarity categories", 
        y="number of tweets",
        title = "Sentiment Analysis of Tweets about Starbucks",
-       subtitle = "classification by polarity")
+       subtitle = "classification by polarity") +
+  theme(legend.position = "none")
 ```
 
 
