@@ -1,38 +1,15 @@
----
-title: "project07"
-author: "Jason Grahn"
-date: "2/18/2019"
-output: github_document
----
+project07
+================
+Jason Grahn
+2/18/2019
 
-Let's do option 2 because it doesn't involve me pasting keys and secrets into my code. 
-```{r load packages, message=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE)
-library(twitteR)
-library(sentiment)
-library(plyr)
-library(ggplot2)
-library(wordcloud)
-library(RColorBrewer)
-library(rstudioapi)
-```
+Let's do option 2 because it doesn't involve me pasting keys and secrets into my code.
 
-```{r this should be secure}
-api_key <- askForSecret(name = "api_key", 
-             message = "Gimme that API key",
-             title = paste(name, "Secret"))
-
-api_secret <- askForSecret(name = "api_secret", 
-             message = "Gimme that API Secret",
-             title = paste(name, "Secret"))
-
-token <- askForSecret(name = "token", 
-             message = "Gimme that token",
-             title = paste(name, "Secret"))
-
-token_secret <- askForSecret(name = "token_secret", 
-             message = "Gimme that token secret",
-             title = paste(name, "Secret"))
+``` r
+api_key <- "F3TEqeRrTIdteTWACqrluKXXp" #in the quotes, put your API key 
+api_secret <- "7LKsZ94MtUxR0ZWB1hUDhoRCcqFMK66YVywVtsJmnUW93eOMoN" #in the quotes, put your API secret token
+token <- "15652379-SFiIlU8bbUXL8o0UU2PBQR4H1cGKJ8vwNV25eNbjv" #in the quotes, put your token 
+token_secret <- "9rfPpbf6nfGo4oPUB4s7JsD7knrcJtk0fiuCRfR8Om4Yj" #in the quotes, put your token secret 
 
 setup_twitter_oauth(api_key, 
                     api_secret, 
@@ -40,7 +17,9 @@ setup_twitter_oauth(api_key,
                     token_secret)
 ```
 
-```{r harvest some tweets}
+    ## [1] "Using direct authentication"
+
+``` r
 some_tweets <- searchTwitter("starbucks", 
                              n=2000, 
                              lang="en")
@@ -48,12 +27,7 @@ some_tweets <- searchTwitter("starbucks",
 some_txt <- sapply(some_tweets, function(x) x$getText())
 ```
 
-```{r write some_tweets to rdata, eval=FALSE, include=FALSE}
-save(some_tweets, file=here::here("project07/data/some_tweets.Rdata"))
-```
-
-
-```{r}
+``` r
 # remove retweet entities
 some_txt <- gsub("(RT|via)((?:\\b\\W*@\\w+)+)", "", some_txt)
 # remove at people
@@ -69,7 +43,7 @@ some_txt <- gsub("[ \t]{2,}", "", some_txt)
 some_txt <- gsub("^\\s+|\\s+$", "", some_txt)
 ```
 
-```{r}
+``` r
 # define "tolower error handling" function
 try.error = function(x)
   {
@@ -93,8 +67,7 @@ some_txt <- some_txt[!is.na(some_txt)]
 names(some_txt) = NULL
 ```
 
-
-```{r}
+``` r
 # classify emotion
 class_emo <- classify_emotion(some_txt, algorithm="bayes", prior=1.0)
 
@@ -111,7 +84,7 @@ class_pol <- classify_polarity(some_txt, algorithm="bayes")
 polarity <- class_pol[,4]
 ```
 
-```{r}
+``` r
 # data frame with results
 sent_df <- data.frame(text = some_txt, 
                       emotion = emotion,
@@ -125,7 +98,7 @@ sent_df = within(sent_df,
                                                      decreasing=TRUE))))
 ```
 
-```{r}
+``` r
 # plot distribution of emotions
 ggplot(sent_df, aes(x=emotion)) +
   geom_bar(aes(y=..count.., fill=emotion)) +
@@ -134,7 +107,11 @@ ggplot(sent_df, aes(x=emotion)) +
        y="number of tweets",
        title = "Sentiment Analysis of Tweets about Starbucks",
        subtitle = "classification by emotion")
+```
 
+![](project07_files/figure-markdown_github/unnamed-chunk-6-1.png)
+
+``` r
 # plot distribution of polarity
 ggplot(sent_df, aes(x=polarity)) +
   geom_bar(aes(y=..count.., fill=polarity)) +
@@ -145,5 +122,4 @@ ggplot(sent_df, aes(x=polarity)) +
        subtitle = "classification by polarity")
 ```
 
-
-
+![](project07_files/figure-markdown_github/unnamed-chunk-6-2.png)
