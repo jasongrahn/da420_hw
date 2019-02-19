@@ -17,14 +17,10 @@ library(RColorBrewer)
 library(rstudioapi)
 ```
 
-```{r this should be secure, message=FALSE, warning=FALSE, include=FALSE}
-api_key <- getPass::getPass(msg = "Gimme that API key")
-
-api_secret <- getPass::getPass(msg = "Gimme that API Secret")
-
-token <- getPass::getPass(msg = "Gimme that token")
-
-token_secret <- getPass::getPass(msg = "Gimme that token secret")
+```{r this should be secure}
+#call the api_token_gather script externally
+knitr::read_chunk(path = '~/da420_hw/project07/api_token_gather.R',
+                  from = c(1,4))
 
 setup_twitter_oauth(api_key, 
                     api_secret, 
@@ -119,17 +115,18 @@ sent_df = within(sent_df,
 
 ```{r}
 # plot distribution of emotions
-ggplot(sent_df, aes(x=emotion)) +
+emotions <- ggplot(sent_df, aes(x=emotion)) +
   geom_bar(aes(y=..count.., fill=emotion)) +
   scale_fill_brewer(palette="Dark2") +
   labs(x="emotion categories", 
        y="number of tweets",
        title = "Sentiment Analysis of Tweets about Starbucks",
        subtitle = "classification by emotion") +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  coord_flip()
 
 # plot distribution of polarity
-ggplot(sent_df, aes(x=polarity)) +
+polarities <- ggplot(sent_df, aes(x=polarity)) +
   geom_bar(aes(y=..count.., fill=polarity)) +
   scale_fill_brewer(palette="RdGy") +
   labs(x="polarity categories", 
@@ -137,6 +134,8 @@ ggplot(sent_df, aes(x=polarity)) +
        title = "Sentiment Analysis of Tweets about Starbucks",
        subtitle = "classification by polarity") +
   theme(legend.position = "none")
+
+cowplot::plot_grid(emotions, polarities)
 ```
 
 
