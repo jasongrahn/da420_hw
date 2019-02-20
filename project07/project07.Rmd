@@ -15,17 +15,20 @@ library(ggplot2)
 library(wordcloud)
 library(RColorBrewer)
 library(rstudioapi)
+
+knitr::read_chunk(path = here::here('project07/api_token_gather.R'))
 ```
 
-```{r this should be secure}
-#call the api_token_gather script externally
-knitr::read_chunk(path = '~/da420_hw/project07/api_token_gather.R',
-                  from = c(1,4))
+```{r apikey}
+#trying to set up code externalization https://yihui.name/knitr/demo/externalization/
+```
 
-setup_twitter_oauth(api_key, 
-                    api_secret, 
-                    token, 
-                    token_secret)
+
+```{r this should be secure}
+setup_twitter_oauth(getPass::getPass(msg = "Gimme that API key"), # get api key 
+                    getPass::getPass(msg = "Gimme that API Secret"), # get api secret
+                    getPass::getPass(msg = "Gimme that token"),  # get api token
+                    getPass::getPass(msg = "Gimme that token secret")) # get token secret
 ```
 
 ```{r harvest some tweets}
@@ -136,6 +139,36 @@ polarities <- ggplot(sent_df, aes(x=polarity)) +
   theme(legend.position = "none")
 
 cowplot::plot_grid(emotions, polarities)
+```
+
+```{r}
+# separating text by emotion
+emos = levels(factor(sent_df$emotion))
+nemo = length(emos)
+emo.docs = rep("", nemo)
+for (i in 1:nemo)
+  {
+  tmp = some_txt[emotion == emos[i]]
+  emo.docs[i] = paste(tmp, collapse=" ")
+  }
+
+# remove stopwords
+emo.docs = removeWords(emo.docs, stopwords("english"))
+
+# create corpus
+corpus = Corpus(VectorSource(emo.docs))
+tdm = TermDocumentMatrix(corpus)
+tdm = as.matrix(tdm)
+colnames(tdm) = emos
+```
+
+```{r}
+# comparison word cloud
+comparison.cloud(tdm, 
+                 colors = brewer.pal(nemo, "Dark2"),
+                 scale = c(3,.25), 
+                 random.order = FALSE, 
+                 title.size = 1.5)
 ```
 
 
