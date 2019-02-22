@@ -2,10 +2,9 @@
 title: "project07"
 author: "Jason Grahn"
 date: "2/18/2019"
-output: github_document
+output: word_document
 ---
 
-Let's do option 2 because it doesn't involve me pasting keys and secrets into my code. 
 ```{r load packages, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 library(twitteR)
@@ -15,20 +14,26 @@ library(ggplot2)
 library(wordcloud)
 library(RColorBrewer)
 library(rstudioapi)
-
-knitr::read_chunk(path = here::here('project07/api_token_gather.R'))
 ```
 
-```{r apikey}
-#trying to set up code externalization https://yihui.name/knitr/demo/externalization/
+```{r keys to the car, message=FALSE, warning=FALSE}
+# trying to set up code externalization https://yihui.name/knitr/demo/externalization/
+# Because embedding passwords in side a script is a horrid horrid practice.
+api_key <- ""
+
+api_secret <- ""
+
+token <- ""
+
+token_secret <- ""
 ```
 
 
 ```{r this should be secure}
-setup_twitter_oauth(getPass::getPass(msg = "Gimme that API key"), # get api key 
-                    getPass::getPass(msg = "Gimme that API Secret"), # get api secret
-                    getPass::getPass(msg = "Gimme that token"),  # get api token
-                    getPass::getPass(msg = "Gimme that token secret")) # get token secret
+setup_twitter_oauth(api_key, #api key
+                    api_secret,
+                    token,
+                    token_secret)
 ```
 
 ```{r harvest some tweets}
