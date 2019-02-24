@@ -1,0 +1,44 @@
+---
+title: "project08"
+author: "Jason Grahn"
+date: "2/24/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(aod) 
+library(ggplot2) 
+library(Rcpp)
+```
+
+
+```{r}
+library(readr)
+mydata <- read_csv("project08/binary.csv")
+```
+
+```{r}
+summary(mydata) 
+
+sapply(mydata, sd) 
+## two-way contingency table of categorical outcomes and predictors 
+## we want to make sure there are not 0 cells 
+
+xtabs(~ admit + rank, data = mydata)
+```
+
+```{r}
+mydata$rank <- factor(mydata$rank) 
+mylogit <- glm(admit ~ gre + gpa + rank, data = mydata, family = "binomial")
+summary(mylogit)
+```
+
+```{r}
+## CIs using profiled log-likelihood 
+confint(mylogit) 
+
+## CIs using standard errors 
+confint.default(mylogit)
+```
+
