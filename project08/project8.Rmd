@@ -2,7 +2,7 @@
 title: "project08"
 author: "Jason Grahn"
 date: "2/24/2019"
-output: word_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -40,5 +40,22 @@ confint(mylogit)
 
 ## CIs using standard errors 
 confint.default(mylogit)
+```
+
+```{r}
+wald.test(b = coef(mylogit), Sigma = vcov(mylogit), Terms = 4:6)
+```
+
+```{r}
+l <- cbind(0,0,0,1,-1,0) 
+wald.test(b = coef(mylogit), Sigma = vcov(mylogit), L = l)
+```
+
+```{r}
+## odds ratios only 
+exp(coef(mylogit)) 
+
+## odds ratios and 95% CI 
+exp(cbind(OR = coef(mylogit), confint(mylogit)))
 ```
 
