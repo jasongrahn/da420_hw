@@ -2,7 +2,7 @@
 title: "project08"
 author: "Jason Grahn"
 date: "2/24/2019"
-output: github_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
@@ -24,13 +24,9 @@ summary(mydata)
 
 sapply(mydata, sd) 
 xtabs(~ admit + rank, data = mydata)
-## two-way contingency table of categorical outcomes and predictors 
-## we want to make sure there are not 0 cells 
-## Here we've built a crosstab for each college rank and  
-## the count of those that are admitted to it. 
-
 ```
 
+Here we've built a crosstab for each college rank and the count of those that are admitted to it. There are no **0** cells, so we can proceed.
 
 ```{r}
 mydata$rank <- factor(mydata$rank) 
@@ -112,27 +108,30 @@ newdata3 <- within(newdata3, {
 head(newdata3)
 ```
 
+All we're making here is an expanded data frame, applying the admission prediction probabilities to the dataset. 
+
 ```{r}
 ggplot(newdata3, aes(x = gre, y = PredictedProb)) + 
   geom_ribbon(aes(ymin = LL, ymax = UL, fill = rank), alpha = .2) + 
-  geom_line(aes(colour = rank), size=1)
+  geom_line(aes(colour = rank), size=1.5)
 ```
+
+Now we get into some visual fun. With this plot we see the predicted probability for admission increases with `gre` score is true for each rank school. However, rank1 schools have a much higher probability. Confidence intervals generally overlap, which shows us that it's possible for a rank4 school attendee to reach SOME of the admission probability of a rank1 attendee, but only barely, and only at the low end. The Merits of GRE-based admission are nearly copletely lost at the high-end of scores. College admission is a class issue.
+
 
 ```{r}
 with(mylogit, null.deviance - deviance)
-```
-
-```{r}
 with(mylogit, df.null - df.residual)
 ```
 
 ```{r}
-with(mylogit,
-     pchisq(null.deviance - deviance, 
-            df.null - df.residual, 
-            lower.tail = FALSE))
+with(mylogit, pchisq(null.deviance - deviance, df.null - df.residual, lower.tail = FALSE))
 ```
+
+The chi-square is `r with(mylogit, null.deviance - deviance)` and has `r with(mylogit, df.null - df.residual)` degrees of freedom. This provides a p-value of `r with(mylogit, pchisq(null.deviance - deviance, df.null - df.residual, lower.tail = FALSE))`. This is obviously much less than any measurable test for fit. The interpretation is that the model fits better than any random selection. 
 
 ```{r}
 logLik(mylogit)
 ```
+
+
