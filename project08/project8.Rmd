@@ -20,13 +20,17 @@ mydata <- read_csv(here::here("project08/binary.csv"))
 
 ```{r}
 summary(mydata) 
+## Summary shows gre and gpa appear to be approximately normally distributed.
 
 sapply(mydata, sd) 
+xtabs(~ admit + rank, data = mydata)
 ## two-way contingency table of categorical outcomes and predictors 
 ## we want to make sure there are not 0 cells 
+## Here we've built a crosstab for each college rank and  
+## the count of those that are admitted to it. 
 
-xtabs(~ admit + rank, data = mydata)
 ```
+
 
 ```{r}
 mydata$rank <- factor(mydata$rank) 
@@ -34,30 +38,40 @@ mylogit <- glm(admit ~ gre + gpa + rank, data = mydata, family = "binomial")
 summary(mylogit)
 ```
 
+This is the output for the generalized linear model (GLM). We're given the forumula for the model and an evaluation of the model. Rank3 and rank4 are both highly significant at practically 0 alpha; while rank2, gpa, and gre are only significant at .05 alpha. 
+
 ```{r}
 ## CIs using profiled log-likelihood 
-confint(mylogit) 
+round(confint(mylogit), 4)
 
 ## CIs using standard errors 
-confint.default(mylogit)
+round(confint.default(mylogit),4)
 ```
+
+Here we have confidence intervals for each of the linear coefficientsthat are provided in the GLM above. With a logistic model we _should_ be utilizing the profiled log-likelihood function.
 
 ```{r}
 wald.test(b = coef(mylogit), Sigma = vcov(mylogit), Terms = 4:6)
 ```
+
+The wald test shows the effect of rank overall. Our chi-squared test statistic is 20.9,and the three degrees of freedom is associated to a p-value of nearly zero (0.00011). This indicates that that the effect of rank is statistically significant.
 
 ```{r}
 l <- cbind(0,0,0,1,-1,0) 
 wald.test(b = coef(mylogit), Sigma = vcov(mylogit), L = l)
 ```
 
+Using "l" we've done a different wald test here, that results with a chi-square statistic at 5.5. This has an associated p-value of 0.019. This tells us that difference between rank2 and rank3 is also statistically significant.
+
 ```{r}
 ## odds ratios only 
-exp(coef(mylogit)) 
+round(exp(coef(mylogit)), 4)
 
 ## odds ratios and 95% CI 
-exp(cbind(OR = coef(mylogit), confint(mylogit)))
+round(exp(cbind(OR = coef(mylogit), confint(mylogit))), 4)
 ```
+
+In this block of code we're exponentiating the coefficients in order to interpret them as odds-ratios. This allows us to say that increasing GPA by one unit increases the _odds_ of being admitted into one of these schools increases by a 2.23. This is against being not admitted at all.
 
 ```{r}
 newdata1 <- with(mydata, 
@@ -72,6 +86,8 @@ newdata1
 newdata1$rankP <- predict(mylogit, newdata = newdata1, type = "response") 
 newdata1
 ```
+
+To interpret the values in the new dataframe, we have to remember these are probability factors. The probability for being accepted into a school given the mean `gre` and mean `gpa` and coming from a rank1 school is `r newdata1$rankP[1]`. For students of so-called "lower tier" rank4 schools, the probability is `r newdata1$rankP[4]` controlling for the same mean `gre` and `gpa`. One way this can be interpreted is that college is a sociological "classist" issue and should be made free for all based on merit, not the _school_ that someone comes from. 
 
 ```{r}
 newdata2 <- with(mydata, 
