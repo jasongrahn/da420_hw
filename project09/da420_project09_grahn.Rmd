@@ -2,28 +2,20 @@
 title: "project09"
 author: "jason grahn"
 date: "3/8/2019"
-output: github_document
+output: word_document
 ---
 
 ```{r setup and package load, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 library(tidyverse) # because I like the tools we have here. 
-library(caret)
 library(class) # the class package is used for simple KNN modeling.
 library(ggcorrplot) # to make pretty correlation plots
-library(kableExtra) # to make pretty tables
-library(moderndive) # sampling
+library(e1071) # used for SVM functions
 ```
 
 Use TWO of the supervised learning predictive modeling methods (e.g., neural network, support vector machine, and naïve Bayes) you choose to do the prediction on the Iris Data Set. 
 
-* Compare the performance (i.e., accuracy) of the two methods. 
-* Please describe each method you used, 
-* the R/SAS package you used, 
-* the performance (i.e., accuracy) comparison of the two methods. 
-
-Make sure you include the commands and outputs, as well as the interpretations of each output.
-
+## Data
 ```{r}
 #load data
 data <- iris 
@@ -36,17 +28,22 @@ head(data,5) %>%
   knitr::kable()
 ```
 
+## Exploration
 ```{r summary stats}
-summary(iris)
+summary(data)
 ```
 
-A short exploration of the data shows sepal width has the the smallest variation of means to it's median, while petal length appears to have the largest differences. We have the same number of species in the dataset which will make it ideal for sampling. 
-
-# Visualization
+### Visualization
 ```{r histogram and density plotting, message=FALSE, warning=FALSE}
 # I like a common theme to my plots
 common_theme <- theme_light() +
   theme(legend.position = "bottom")
+
+data %>% select(species, 1:4) %>% gather(-species, key = measurement, value = value) %>%
+  ggplot(aes(x = measurement, y = value)) +
+  geom_boxplot() +
+  facet_grid(~ measurement, scales = "free") +
+  theme_light()
 
 # histograms for each 
 histogram <- iris %>% 
@@ -92,7 +89,7 @@ Scatterplotting for sepal variables shows similar behaviors to what we saw in th
 
 The first step in making our train v test dataset would be to assign random values to each row, then pull those out. I dont know how to do that in one full swoop, so I'll subset each species, build some 1's and 2's, assign _those_ to each subset, put them all back together, then filter out train vs test with the 1's and 2's. I'm 100% positive there's a better way to do this, probably with one simple package; but this is what I _know_, so that's what I'll run with. We __should__ be able to use the train vs test data for both methods. 
 
-```{r create the train vs test data separation}
+```{r create the train vs test data separation, message=FALSE}
 set.seed(666)
 
 setosa.sub <- data %>% filter(species == "setosa")
@@ -135,30 +132,86 @@ $K$-Nearest Neighbors uses the neighbors of a given datapoint in order to classi
 
 To execute KNN, we can use the `class` package. It's good to reinforce the education we've received so we use this this package because it requires minimal inputs and we've been trained on it already. `Class` contains the `knn` function which requires, quite simply, your training dataset, your testing dataset, what your selected _k-value_ is, and how to label the output. 
 
-```{r}
+```{r knn build}
 data.knn <- knn(train = data.training,
                 test = data.test, 
                 k = 5,
                 cl = data.trainLabels)
-table(data.knn)
 ```
 
-```{r accuracy table}
+```{r knn table}
 table(data.testLabels, data.knn)
+```
+ 
+The table shows the KNN output against the known labels for the iris data. I see I mispredicted 1 _virginica_ as a _versacolor_. Otherwise we have accurate predictions across the board.
 
+```{r knn accuracy}
 accuracy.table <- data.joined %>% 
   filter(ind == 2) %>% 
   mutate(data.knn = data.knn,
-         predict.true = if_else(species == data.knn, TRUE, FALSE)) 
+         knn.true = if_else(species == data.knn, TRUE, FALSE)) 
 
-accuracy.rate <- accuracy.table %>% 
-  group_by(predict.true) %>% 
+knn.accuracy.rate <- accuracy.table %>% 
+  group_by(knn.true) %>% 
   summarize(count = n(),
             rate = count / nrow(accuracy.table) * 100,
             rate = round(rate,2))
 
-accuracy.rate %>% 
+knn.accuracy.rate %>% 
   knitr::kable()
 ```
 
-Nice! We have `r accuracy.rate[2,3]` percent accuracy!
+Nice! We have `r knn.accuracy.rate[2,3]` percent accuracy with our $k$nn!
+
+# Support Vector Machine (SVM)
+
+With Support Vector Machines, we first have to define the prediction model. We use the joined data table build previously, filtering to keep the training dataset. Then we build the svm model against each of the dimensions of the flowers. 
+
+To build the SVM training model, I use the `e1071` package containing the `svm` function. I'm telling the model that we have a classification problem by setting the `method` to "classification" and setting the `kernal` to "linear" in order to draw linear boundaries around the classifications, and because it's the simplest model. 
+```{r build the model}
+set.seed(666)
+model <- data.joined %>% 
+  filter(ind == 1) %>% 
+  svm(species ~ sepal.length + sepal.width + petal.length + petal.width, 
+      data = .,
+      method="C-classification",
+      kernel="linear")
+
+summary(model)
+```
+
+The model summary shows that it has found 25 support vector points to use for delinating iris classifications of `setosa`, `versicolor`, and `virginica`. Now we apply this model to the test dataset in order to predict classifications.
+
+```{r}
+pred <- predict(model, data.test)
+table(pred, data.testLabels)
+```
+
+When we compare the predictions against the testLabels, we are wrong on **zero** predictions! 
+
+```{r}
+# Write the SVM accuracy back to the accuracy table so we can compare results
+accuracy.table <- accuracy.table %>% 
+  mutate(data.svm = pred,
+         svm.true = if_else(species == data.svm, TRUE, FALSE)) 
+
+svm.accuracy.rate <- accuracy.table %>% 
+  group_by(svm.true) %>% 
+  summarize(count = n(),
+            rate = count / nrow(accuracy.table) * 100,
+            rate = round(rate,2))
+
+svm.accuracy.rate %>% 
+  knitr::kable()
+```
+
+That _is_ a surprise! We have `r svm.accuracy.rate$rate[1]` percent accuracy with our SMV!
+
+# Comparing Performance (accuracy)
+
+```{r}
+svm.ac <- svm.accuracy.rate %>% filter(svm.true == TRUE) %>% select(rate)
+knn.ac <- knn.accuracy.rate %>% filter(knn.true == TRUE) %>% select(rate)
+```
+
+The difference in accuracy between the two methods `SVM` and `KNN` are fairly close. SVM came in at `r svm.ac` percent accuracy, while KNN came in at `r knn.ac` percent. This is a difference of `r svm.ac - knn.ac`.

@@ -5,12 +5,8 @@ jason grahn
 
 Use TWO of the supervised learning predictive modeling methods (e.g., neural network, support vector machine, and naïve Bayes) you choose to do the prediction on the Iris Data Set.
 
--   Compare the performance (i.e., accuracy) of the two methods.
--   Please describe each method you used,
--   the R/SAS package you used,
--   the performance (i.e., accuracy) comparison of the two methods.
-
-Make sure you include the commands and outputs, as well as the interpretations of each output.
+Data
+----
 
 ``` r
 #load data
@@ -24,116 +20,19 @@ head(data,5) %>%
   knitr::kable()
 ```
 
-<table>
-<thead>
-<tr>
-<th style="text-align:right;">
-sepal.length
-</th>
-<th style="text-align:right;">
-sepal.width
-</th>
-<th style="text-align:right;">
-petal.length
-</th>
-<th style="text-align:right;">
-petal.width
-</th>
-<th style="text-align:left;">
-species
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-5.1
-</td>
-<td style="text-align:right;">
-3.5
-</td>
-<td style="text-align:right;">
-1.4
-</td>
-<td style="text-align:right;">
-0.2
-</td>
-<td style="text-align:left;">
-setosa
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4.9
-</td>
-<td style="text-align:right;">
-3.0
-</td>
-<td style="text-align:right;">
-1.4
-</td>
-<td style="text-align:right;">
-0.2
-</td>
-<td style="text-align:left;">
-setosa
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4.7
-</td>
-<td style="text-align:right;">
-3.2
-</td>
-<td style="text-align:right;">
-1.3
-</td>
-<td style="text-align:right;">
-0.2
-</td>
-<td style="text-align:left;">
-setosa
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4.6
-</td>
-<td style="text-align:right;">
-3.1
-</td>
-<td style="text-align:right;">
-1.5
-</td>
-<td style="text-align:right;">
-0.2
-</td>
-<td style="text-align:left;">
-setosa
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5.0
-</td>
-<td style="text-align:right;">
-3.6
-</td>
-<td style="text-align:right;">
-1.4
-</td>
-<td style="text-align:right;">
-0.2
-</td>
-<td style="text-align:left;">
-setosa
-</td>
-</tr>
-</tbody>
-</table>
+|  sepal.length|  sepal.width|  petal.length|  petal.width| species |
+|-------------:|------------:|-------------:|------------:|:--------|
+|           5.1|          3.5|           1.4|          0.2| setosa  |
+|           4.9|          3.0|           1.4|          0.2| setosa  |
+|           4.7|          3.2|           1.3|          0.2| setosa  |
+|           4.6|          3.1|           1.5|          0.2| setosa  |
+|           5.0|          3.6|           1.4|          0.2| setosa  |
+
+Exploration
+-----------
+
 ``` r
-summary(iris)
+summary(data)
 ```
 
     ##   sepal.length    sepal.width     petal.length    petal.width   
@@ -151,16 +50,23 @@ summary(iris)
     ##                 
     ## 
 
-A short exploration of the data shows sepal width has the the smallest variation of means to it's median, while petal length appears to have the largest differences. We have the same number of species in the dataset which will make it ideal for sampling.
-
-Visualization
-=============
+### Visualization
 
 ``` r
 # I like a common theme to my plots
 common_theme <- theme_light() +
   theme(legend.position = "bottom")
 
+data %>% select(species, 1:4) %>% gather(-species, key = measurement, value = value) %>%
+  ggplot(aes(x = measurement, y = value)) +
+  geom_boxplot() +
+  facet_grid(~ measurement, scales = "free") +
+  theme_light()
+```
+
+![](da420_project09_grahn_files/figure-markdown_github/histogram%20and%20density%20plotting-1.png)
+
+``` r
 # histograms for each 
 histogram <- iris %>% 
   ggplot() +
@@ -179,7 +85,7 @@ density <- iris %>%
 cowplot::plot_grid(histogram, density)
 ```
 
-![](da420_project09_grahn_files/figure-markdown_github/histogram%20and%20density%20plotting-1.png)
+![](da420_project09_grahn_files/figure-markdown_github/histogram%20and%20density%20plotting-2.png)
 
 The histogram shows setosa clearly sits on it's own with very short petal lengths; but virginica and veriscolor have at least some degree of overlap.
 
@@ -232,12 +138,7 @@ virginica.sub <- virginica.sub %>% mutate(ind = ind)
 data.joined <- setosa.sub %>% 
   full_join(versicolor.sub) %>% 
   full_join(virginica.sub)
-```
 
-    ## Joining, by = c("sepal.length", "sepal.width", "petal.length", "petal.width", "species", "ind")
-    ## Joining, by = c("sepal.length", "sepal.width", "petal.length", "petal.width", "species", "ind")
-
-``` r
 # make training set and labels
 data.training <- data.joined %>% 
   filter(ind == 1) %>% 
@@ -264,12 +165,7 @@ data.knn <- knn(train = data.training,
                 test = data.test, 
                 k = 5,
                 cl = data.trainLabels)
-table(data.knn)
 ```
-
-    ## data.knn
-    ##     setosa versicolor  virginica 
-    ##         17         18         16
 
 ``` r
 table(data.testLabels, data.knn)
@@ -281,59 +177,115 @@ table(data.testLabels, data.knn)
     ##      versicolor      0         17         0
     ##      virginica       0          1        16
 
+The table shows the KNN output against the known labels for the iris data. I see I mispredicted 1 *virginica* as a *versacolor*. Otherwise we have accurate predictions across the board.
+
 ``` r
 accuracy.table <- data.joined %>% 
   filter(ind == 2) %>% 
   mutate(data.knn = data.knn,
-         predict.true = if_else(species == data.knn, TRUE, FALSE)) 
+         knn.true = if_else(species == data.knn, TRUE, FALSE)) 
 
-accuracy.rate <- accuracy.table %>% 
-  group_by(predict.true) %>% 
+knn.accuracy.rate <- accuracy.table %>% 
+  group_by(knn.true) %>% 
   summarize(count = n(),
             rate = count / nrow(accuracy.table) * 100,
             rate = round(rate,2))
 
-accuracy.rate %>% 
+knn.accuracy.rate %>% 
   knitr::kable()
 ```
 
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-predict.true
-</th>
-<th style="text-align:right;">
-count
-</th>
-<th style="text-align:right;">
-rate
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-FALSE
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1.96
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-TRUE
-</td>
-<td style="text-align:right;">
-50
-</td>
-<td style="text-align:right;">
-98.04
-</td>
-</tr>
-</tbody>
-</table>
-Nice! We have 98.04 percent accuracy!
+| knn.true |  count|   rate|
+|:---------|------:|------:|
+| FALSE    |      1|   1.96|
+| TRUE     |     50|  98.04|
+
+Nice! We have 98.04 percent accuracy with our *k*nn!
+
+Support Vector Machine (SVM)
+============================
+
+With Support Vector Machines, we first have to define the prediction model. We use the joined data table build previously, filtering to keep the training dataset. Then we build the svm model against each of the dimensions of the flowers.
+
+To build the SVM training model, I use the `e1071` package containing the `svm` function. I'm telling the model that we have a classification problem by setting the `method` to "classification" and setting the `kernal` to "linear" in order to draw linear boundaries around the classifications, and because it's the simplest model.
+
+``` r
+set.seed(666)
+model <- data.joined %>% 
+  filter(ind == 1) %>% 
+  svm(species ~ sepal.length + sepal.width + petal.length + petal.width, 
+      data = .,
+      method="C-classification",
+      kernel="linear")
+
+summary(model)
+```
+
+    ## 
+    ## Call:
+    ## svm(formula = species ~ sepal.length + sepal.width + petal.length + 
+    ##     petal.width, data = ., method = "C-classification", kernel = "linear")
+    ## 
+    ## 
+    ## Parameters:
+    ##    SVM-Type:  C-classification 
+    ##  SVM-Kernel:  linear 
+    ##        cost:  1 
+    ##       gamma:  0.25 
+    ## 
+    ## Number of Support Vectors:  25
+    ## 
+    ##  ( 2 11 12 )
+    ## 
+    ## 
+    ## Number of Classes:  3 
+    ## 
+    ## Levels: 
+    ##  setosa versicolor virginica
+
+The model summary shows that it has found 25 support vector points to use for delinating iris classifications of `setosa`, `versicolor`, and `virginica`. Now we apply this model to the test dataset in order to predict classifications.
+
+``` r
+pred <- predict(model, data.test)
+table(pred, data.testLabels)
+```
+
+    ##             data.testLabels
+    ## pred         setosa versicolor virginica
+    ##   setosa         17          0         0
+    ##   versicolor      0         17         0
+    ##   virginica       0          0        17
+
+When we compare the predictions against the testLabels, we are wrong on **zero** predictions!
+
+``` r
+# Write the SVM accuracy back to the accuracy table so we can compare results
+accuracy.table <- accuracy.table %>% 
+  mutate(data.svm = pred,
+         svm.true = if_else(species == data.svm, TRUE, FALSE)) 
+
+svm.accuracy.rate <- accuracy.table %>% 
+  group_by(svm.true) %>% 
+  summarize(count = n(),
+            rate = count / nrow(accuracy.table) * 100,
+            rate = round(rate,2))
+
+svm.accuracy.rate %>% 
+  knitr::kable()
+```
+
+| svm.true |  count|  rate|
+|:---------|------:|-----:|
+| TRUE     |     51|   100|
+
+That *is* a surprise! We have 100 percent accuracy with our SMV!
+
+Comparing Performance (accuracy)
+================================
+
+``` r
+svm.ac <- svm.accuracy.rate %>% filter(svm.true == TRUE) %>% select(rate)
+knn.ac <- knn.accuracy.rate %>% filter(knn.true == TRUE) %>% select(rate)
+```
+
+The difference in accuracy between the two methods `SVM` and `KNN` are fairly close. SVM came in at 100 percent accuracy, while KNN came in at 98.04 percent. This is a difference of 1.96.
