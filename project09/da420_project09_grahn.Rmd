@@ -1,0 +1,24 @@
+---
+title: "project09"
+author: "jason grahn"
+date: "3/8/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Use TWO of the supervised learning predictive modeling methods (e.g., neural network, support vector machine, and naïve Bayes) you choose to do the prediction on the Iris Data Set. 
+
+
+Use two thirds of data of each class (i.e., Setosa, Versicolour and Virginica) as training set and do the prediction on the rest. 
+
+* Compare the performance (i.e., accuracy) of the two methods. 
+* Please describe each method you used, 
+* how you separate the training and testing data set, 
+* the R/SAS package you used, 
+* the performance (i.e., accuracy) comparison of the two methods. 
+
+Make sure you include the commands and outputs, as well as the interpretations of each output.
+
