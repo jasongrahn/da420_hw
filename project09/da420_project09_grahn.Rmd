@@ -63,7 +63,6 @@ density <- iris %>%
 cowplot::plot_grid(histogram, density)
 ```
 
-
 The histogram shows setosa clearly sits on it's own with very short petal lengths; but virginica and veriscolor have at least some degree of overlap.
 
 Density plotting reinforces the histogram. It does a better job showing the overlap between virginica and versicolor. 
