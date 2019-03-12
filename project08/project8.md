@@ -8,18 +8,6 @@ library(readr)
 mydata <- read_csv(here::here("project08/binary.csv"))
 ```
 
-    ## Parsed with column specification:
-    ## cols(
-    ##   admit = col_double(),
-    ##   gre = col_double(),
-    ##   gpa = col_double(),
-    ##   rank = col_double()
-    ## )
-
-``` r
-summary(mydata) 
-```
-
     ##      admit             gre             gpa             rank      
     ##  Min.   :0.0000   Min.   :220.0   Min.   :2.260   Min.   :1.000  
     ##  1st Qu.:0.0000   1st Qu.:520.0   1st Qu.:3.130   1st Qu.:2.000  
@@ -28,18 +16,8 @@ summary(mydata)
     ##  3rd Qu.:1.0000   3rd Qu.:660.0   3rd Qu.:3.670   3rd Qu.:3.000  
     ##  Max.   :1.0000   Max.   :800.0   Max.   :4.000   Max.   :4.000
 
-``` r
-## Summary shows gre and gpa appear to be approximately normally distributed.
-
-sapply(mydata, sd) 
-```
-
     ##       admit         gre         gpa        rank 
     ##   0.4660867 115.5165364   0.3805668   0.9444602
-
-``` r
-xtabs(~ admit + rank, data = mydata)
-```
 
     ##      rank
     ## admit  1  2  3  4
@@ -88,8 +66,6 @@ This is the output for the generalized linear model (GLM). We're given the forum
 ## CIs using profiled log-likelihood 
 round(confint(mylogit), 4)
 ```
-
-    ## Waiting for profiling to be done...
 
     ##               2.5 %  97.5 %
     ## (Intercept) -6.2716 -1.7925
@@ -151,8 +127,6 @@ round(exp(coef(mylogit)), 4)
 ## odds ratios and 95% CI 
 round(exp(cbind(OR = coef(mylogit), confint(mylogit))), 4)
 ```
-
-    ## Waiting for profiling to be done...
 
     ##                 OR  2.5 % 97.5 %
     ## (Intercept) 0.0185 0.0019 0.1665

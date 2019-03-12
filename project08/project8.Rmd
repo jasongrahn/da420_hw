@@ -2,11 +2,15 @@
 title: "project08"
 author: "Jason Grahn"
 date: "2/24/2019"
-output: word_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
 library(aod) 
 library(ggplot2) 
 library(Rcpp)
@@ -18,7 +22,7 @@ library(readr)
 mydata <- read_csv(here::here("project08/binary.csv"))
 ```
 
-```{r}
+```{r echo=FALSE}
 summary(mydata) 
 ## Summary shows gre and gpa appear to be approximately normally distributed.
 
