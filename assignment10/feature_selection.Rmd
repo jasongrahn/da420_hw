@@ -1,0 +1,101 @@
+---
+title: "feature selection w R"
+author: "Jason Grahn"
+date: "3/12/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(caret)
+library(Boruta)
+library(tidyverse)
+```
+
+```{r}
+head(iris,3)
+tibble::glimpse(iris)
+```
+
+#Boruta
+
+```{r}
+# Perform Boruta search
+boruta_output <- Boruta(mpg ~ ., 
+                        data=na.omit(mtcars %>% mutate(vs = as.factor(vs),
+                                                       am = as.factor(am))),
+                        doTrace=2) 
+boruta_output
+```
+
+```{r}
+boruta_signif <- getSelectedAttributes(boruta_output, 
+                                       withTentative = TRUE,
+                                       )
+
+print(boruta_signif)  
+```
+
+```{r}
+roughFixMod <- TentativeRoughFix(boruta_output)
+boruta_signif <- getSelectedAttributes(roughFixMod)
+print(boruta_signif)
+```
+
+```{r}
+# Variable Importance Scores
+imps <- attStats(roughFixMod)
+imps2 = imps[imps$decision != 'Rejected', c('meanImp', 'decision')]
+(imps2[order(-imps2$meanImp), ])  # descending sort
+```
+
+```{r}
+# Plot variable importance
+plot(boruta_output, 
+     cex.axis=.7, 
+     las=2, 
+     xlab="", 
+     main="Variable Importance")  
+```
+
+```{r}
+getConfirmedFormula(boruta_output)
+getNonRejectedFormula(boruta_output)
+```
+
+#Stepwise 
+
+```{r}
+# Step 1: Define base intercept only model
+base.mod <- lm(mpg ~ 1, 
+               data=mtcars)  
+base.mod
+```
+
+```{r}
+# Step 2: Full model with all predictors
+all.mod <- lm(mpg ~ .,
+              data= mtcars) 
+all.mod
+```
+
+```{r}
+# Step 3: Perform step-wise algorithm. direction='both' implies both forward and backward stepwise
+stepMod <- step(base.mod, 
+                scope = list(lower = base.mod, upper = all.mod), 
+                direction = "forward", 
+                trace = 0, 
+                steps = 1000)  
+stepMod
+```
+
+```{r}
+
+# Step 4: Get the shortlisted variable.
+shortlistedVars <- names(unlist(stepMod[[1]])) 
+shortlistedVars <- shortlistedVars[!shortlistedVars %in% "(Intercept)"] # remove intercept
+
+# Show
+print(shortlistedVars)
+```
+
