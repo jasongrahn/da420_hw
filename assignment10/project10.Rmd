@@ -2,7 +2,7 @@
 title: "feature selection w R"
 author: "Jason Grahn"
 date: "3/12/2019"
-output: github_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
