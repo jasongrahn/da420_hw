@@ -7,15 +7,16 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(caret)
-library(Boruta)
-library(tidyverse)
-library(e1071)
+library(tidyverse) # multipurpose tools
+library(caret) # multipurpose modeling tools
+library(Boruta)  # necessary package for running Boruta feature selection
+library(e1071) # necessary package for Recursive Feature elimination with classifiers
+library(randomForest) # necessary package for forests
+library(mlbench) # necessary pacakge for Features by importance
 ```
 
 ```{r}
 head(iris,3)
-tibble::glimpse(iris)
 ```
 
 #Boruta
@@ -26,46 +27,39 @@ boruta_output <- Boruta(Species ~ .,
                         data=na.omit(iris),
                         doTrace=2) 
 boruta_output
-```
 
-```{r}
 boruta_signif <- getSelectedAttributes(boruta_output, 
-                                       withTentative = TRUE
-                                       )
+                                       withTentative = TRUE)
 
 print(boruta_signif)  
-```
 
-```{r}
 roughFixMod <- TentativeRoughFix(boruta_output)
 boruta_signif <- getSelectedAttributes(roughFixMod)
 print(boruta_signif)
-```
 
-```{r}
 # Variable Importance Scores
 imps <- attStats(roughFixMod)
 imps2 = imps[imps$decision != 'Rejected', c('meanImp', 'decision')]
 (imps2[order(-imps2$meanImp), ])  # descending sort
-```
 
-```{r}
 # Plot variable importance
 plot(boruta_output, 
      cex.axis=.7, 
      las=2, 
      xlab="", 
      main="Variable Importance")  
-```
 
-```{r}
 getConfirmedFormula(boruta_output)
 getNonRejectedFormula(boruta_output)
 ```
 
+Boruta feature selection is run using the Bortua package. Boruta processes feature selection by ranking the variables through random forest processing. The downside of working through random forest is that the selection process is a bit of a black-box. However, the advantage with Boruta is that it decides variable importance and selects those that are statistically significant; with allowance in determining what p-value the analyst considers significant. Boruta also processes what it considers “tentative” variables where it is unsure if a variable should be considered important or not. After running through multiple iterations of possible models, Boruta determines an “importance” score for each, and decides if they should be included in a model. 
+
+In this case, Boruta hasn't eliminated any features, but it does state that the top _two_ features are `Petal.Width` and `Petal.Length`. It did this by running 9 iterations on models in order to determine there are zero tentative features, that all were acceptiable to some degree, and the two most important were those mentioned above. 
+
 # Recursive Feature Elimination (RFE)
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 set.seed(100)
 options(warn=-1)
 
@@ -81,5 +75,44 @@ lmProfile <- rfe(x=iris[1:4], y=iris$Species,
                  rfeControl = ctrl)
 
 lmProfile
+
+lmProfile %>% 
+  ggplot(aes(x = Variables, y = Accuracy)) +
+  geom_col() +
+  ylim(.91, .97) +
+  theme_light()
 ```
+
+Recursive feature elimination is a computationally intensive process that cross-validates all combination of variables then repeats the pricess iteratively to find and eliminate insignificant variables. In this case, it's settled on using two features as the most optimum model, and those two feature are `Petal.Length` and `Petal.Width`.
+
+# Learning Vector Quantization
+
+```{r}
+control <- trainControl(method="repeatedcv", 
+                        number=10, 
+                        repeats=3)
+
+# train the model
+model <- train(Species~., 
+               data=iris, 
+               method="lvq", 
+               preProcess="scale", 
+               trControl=control)
+
+# estimate variable importance
+importance <- varImp(model, 
+                     scale=FALSE)
+
+# summarize importance
+print(importance)
+
+# plot importance
+plot(importance)
+```
+
+With Learning Vector Quantization, we operate an artificial neural network. It uses the mlBench package. I dont know how it works. We can see from the graphical output that the top two variables for predicticting any of the three flower types are `Petal.Length` and `Petal.Width`. `Sepal.Length` is also third important, but isn't necessary for modeling. 
+
+Sources: 
+https://www.machinelearningplus.com/machine-learning/feature-selection/
+https://machinelearningmastery.com/feature-selection-with-the-caret-r-package/
 
