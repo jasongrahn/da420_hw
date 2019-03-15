@@ -1,0 +1,85 @@
+---
+title: "feature selection w R"
+author: "Jason Grahn"
+date: "3/12/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(caret)
+library(Boruta)
+library(tidyverse)
+library(e1071)
+```
+
+```{r}
+head(iris,3)
+tibble::glimpse(iris)
+```
+
+#Boruta
+
+```{r}
+# Perform Boruta search
+boruta_output <- Boruta(Species ~ ., 
+                        data=na.omit(iris),
+                        doTrace=2) 
+boruta_output
+```
+
+```{r}
+boruta_signif <- getSelectedAttributes(boruta_output, 
+                                       withTentative = TRUE
+                                       )
+
+print(boruta_signif)  
+```
+
+```{r}
+roughFixMod <- TentativeRoughFix(boruta_output)
+boruta_signif <- getSelectedAttributes(roughFixMod)
+print(boruta_signif)
+```
+
+```{r}
+# Variable Importance Scores
+imps <- attStats(roughFixMod)
+imps2 = imps[imps$decision != 'Rejected', c('meanImp', 'decision')]
+(imps2[order(-imps2$meanImp), ])  # descending sort
+```
+
+```{r}
+# Plot variable importance
+plot(boruta_output, 
+     cex.axis=.7, 
+     las=2, 
+     xlab="", 
+     main="Variable Importance")  
+```
+
+```{r}
+getConfirmedFormula(boruta_output)
+getNonRejectedFormula(boruta_output)
+```
+
+# Recursive Feature Elimination (RFE)
+
+```{r}
+set.seed(100)
+options(warn=-1)
+
+subsets <- c(1:5, 10, 15, 18)
+
+ctrl <- rfeControl(functions = rfFuncs,
+                   method = "repeatedcv",
+                   repeats = 5,
+                   verbose = FALSE)
+
+lmProfile <- rfe(x=iris[1:4], y=iris$Species,
+                 sizes = subsets,
+                 rfeControl = ctrl)
+
+lmProfile
+```
+
